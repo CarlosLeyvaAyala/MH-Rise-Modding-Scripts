@@ -1,4 +1,4 @@
 @echo off
 set script=%~dp0%script.fsx
-dotnet fsi "%script%" %*
-@REM pause
+dotnet fsi "%script%" "" %*
+pause
