@@ -1,14 +1,17 @@
 @echo off
+@pushd %~dp0
+title Armor extractor
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Set here the path to re_chunk_000.pak
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-set re_chunk_path=""
+set re_chunk_path="F:\SteamLibrary\steamapps\common\MonsterHunterRise\re_chunk_000.pak"
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: IGNORE
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-set script=%~dp0%script.fsx
+set script=GetFiles.fsx
+set scriptOpenDir=OpenFolders.fsx
 set bat=%~dp1extract-rise-pak.bat
 
 echo Opening FSI. Please wait...
@@ -25,5 +28,7 @@ if %re_chunk_path% == "" (
     echo with any Notepad application and set re_chunk_path="your full chunk path here".
 ) else (
     "%bat%" "%re_chunk_path%"
+    dotnet fsi "%scriptOpenDir%" "%~dp1"
 )
+@popd
 pause 

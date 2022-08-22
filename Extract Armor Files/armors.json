@@ -1,0 +1,886 @@
+[
+  {
+    "Name": "Aelucanth",
+    "Id": "241"
+  },
+  {
+    "Name": "Aknosom S",
+    "Id": "203"
+  },
+  {
+    "Name": "Aknosom X",
+    "Id": "302"
+  },
+  {
+    "Name": "Aknosom",
+    "Id": "203"
+  },
+  {
+    "Name": "Akuma",
+    "Id": "276"
+  },
+  {
+    "Name": "Alloy",
+    "Id": "004"
+  },
+  {
+    "Name": "Almudron X",
+    "Id": "307"
+  },
+  {
+    "Name": "Almudron",
+    "Id": "208"
+  },
+  {
+    "Name": "Anjanath X",
+    "Id": "332"
+  },
+  {
+    "Name": "Anjanath",
+    "Id": "020"
+  },
+  {
+    "Name": "Arc",
+    "Id": "342"
+  },
+  {
+    "Name": "Archfiend Armor",
+    "Id": "355"
+  },
+  {
+    "Name": "Arthur",
+    "Id": "251"
+  },
+  {
+    "Name": "Arzuros",
+    "Id": "224"
+  },
+  {
+    "Name": "Astalos",
+    "Id": "344"
+  },
+  {
+    "Name": "Auroracanth",
+    "Id": "348"
+  },
+  {
+    "Name": "Azure Age",
+    "Id": "293"
+  },
+  {
+    "Name": "Azure",
+    "Id": "361"
+  },
+  {
+    "Name": "Baggi",
+    "Id": "223"
+  },
+  {
+    "Name": "Barbania",
+    "Id": "383"
+  },
+  {
+    "Name": "Barioth X",
+    "Id": "319"
+  },
+  {
+    "Name": "Barioth",
+    "Id": "079"
+  },
+  {
+    "Name": "Barroth X",
+    "Id": "316"
+  },
+  {
+    "Name": "Barroth",
+    "Id": "012"
+  },
+  {
+    "Name": "Basarios X",
+    "Id": "324"
+  },
+  {
+    "Name": "Basarios",
+    "Id": "233"
+  },
+  {
+    "Name": "Base Commander",
+    "Id": "381"
+  },
+  {
+    "Name": "Bazelgeuse X",
+    "Id": "333"
+  },
+  {
+    "Name": "Bazelgeuse",
+    "Id": "042"
+  },
+  {
+    "Name": "Benevolent Bandage",
+    "Id": "288"
+  },
+  {
+    "Name": "Bishaten X",
+    "Id": "301"
+  },
+  {
+    "Name": "Bishaten",
+    "Id": "202"
+  },
+  {
+    "Name": "Black Belt S",
+    "Id": "433"
+  },
+  {
+    "Name": "Black Belt",
+    "Id": "280"
+  },
+  {
+    "Name": "Black Leather",
+    "Id": "255"
+  },
+  {
+    "Name": "Blessed Feather",
+    "Id": "507"
+  },
+  {
+    "Name": "Blossom",
+    "Id": "291"
+  },
+  {
+    "Name": "Bnahabra",
+    "Id": "217"
+  },
+  {
+    "Name": "Bombadgy Mask",
+    "Id": "268"
+  },
+  {
+    "Name": "Bone",
+    "Id": "003"
+  },
+  {
+    "Name": "Bow Necklace",
+    "Id": "285"
+  },
+  {
+    "Name": "Brigade",
+    "Id": "036"
+  },
+  {
+    "Name": "Bullfango Mask",
+    "Id": "218"
+  },
+  {
+    "Name": "Bunny Dango Earrings",
+    "Id": "267"
+  },
+  {
+    "Name": "Canyne Mask",
+    "Id": "260"
+  },
+  {
+    "Name": "Canyne Tail",
+    "Id": "260"
+  },
+  {
+    "Name": "Ceanataur",
+    "Id": "338"
+  },
+  {
+    "Name": "Chainmail",
+    "Id": "014"
+  },
+  {
+    "Name": "Channeler",
+    "Id": "259"
+  },
+  {
+    "Name": "Chaos",
+    "Id": "243"
+  },
+  {
+    "Name": "Charit\u00E9",
+    "Id": "374"
+  },
+  {
+    "Name": "Chrome Metal",
+    "Id": "252"
+  },
+  {
+    "Name": "Cohoot Mask",
+    "Id": "389"
+  },
+  {
+    "Name": "Commission",
+    "Id": "380"
+  },
+  {
+    "Name": "Crimson Valstrax",
+    "Id": "237"
+  },
+  {
+    "Name": "Cunning Specs",
+    "Id": "060"
+  },
+  {
+    "Name": "Damascus X",
+    "Id": "314"
+  },
+  {
+    "Name": "Damascus",
+    "Id": "043"
+  },
+  {
+    "Name": "Death Stench",
+    "Id": "026"
+  },
+  {
+    "Name": "Diablos X",
+    "Id": "323"
+  },
+  {
+    "Name": "Diablos",
+    "Id": "034"
+  },
+  {
+    "Name": "Dignified",
+    "Id": "369"
+  },
+  {
+    "Name": "Diver",
+    "Id": "277"
+  },
+  {
+    "Name": "Dober",
+    "Id": "044"
+  },
+  {
+    "Name": "Dragonsbane",
+    "Id": "394"
+  },
+  {
+    "Name": "Droth",
+    "Id": "220"
+  },
+  {
+    "Name": "Edel",
+    "Id": "244"
+  },
+  {
+    "Name": "Elgado",
+    "Id": "508"
+  },
+  {
+    "Name": "Espinas",
+    "Id": "356"
+  },
+  {
+    "Name": "Ethereal Diadem",
+    "Id": "391"
+  },
+  {
+    "Name": "Feather of Mastery",
+    "Id": "037"
+  },
+  {
+    "Name": "Felyne Ears",
+    "Id": "261"
+  },
+  {
+    "Name": "Felyne Stealth Hood",
+    "Id": "270"
+  },
+  {
+    "Name": "Felyne Tail",
+    "Id": "261"
+  },
+  {
+    "Name": "Fiorayne",
+    "Id": "407"
+  },
+  {
+    "Name": "Five Element",
+    "Id": "385"
+  },
+  {
+    "Name": "Flame Seal",
+    "Id": "061"
+  },
+  {
+    "Name": "Floral",
+    "Id": "265"
+  },
+  {
+    "Name": "Formal Dragon",
+    "Id": "375"
+  },
+  {
+    "Name": "Fox Mask",
+    "Id": "264"
+  },
+  {
+    "Name": "Frilled Choker",
+    "Id": "287"
+  },
+  {
+    "Name": "Gala Suit",
+    "Id": "290"
+  },
+  {
+    "Name": "Garangolm",
+    "Id": "354"
+  },
+  {
+    "Name": "Gargwa Mask",
+    "Id": "213"
+  },
+  {
+    "Name": "Golden Lune",
+    "Id": "335"
+  },
+  {
+    "Name": "Golden",
+    "Id": "235"
+  },
+  {
+    "Name": "Gore Magala",
+    "Id": "341"
+  },
+  {
+    "Name": "Gorgeous Earrings",
+    "Id": "282"
+  },
+  {
+    "Name": "Goss Harag X",
+    "Id": "306"
+  },
+  {
+    "Name": "Goss Harag",
+    "Id": "207"
+  },
+  {
+    "Name": "Grand Chaos",
+    "Id": "243"
+  },
+  {
+    "Name": "Grand Divine Ire",
+    "Id": "339"
+  },
+  {
+    "Name": "Grand God\u0027s Peer",
+    "Id": "326"
+  },
+  {
+    "Name": "Grand Mizuha",
+    "Id": "312"
+  },
+  {
+    "Name": "Guardian",
+    "Id": "386"
+  },
+  {
+    "Name": "Guild Bard",
+    "Id": "376"
+  },
+  {
+    "Name": "Guild Cross",
+    "Id": "279"
+  },
+  {
+    "Name": "Guild Palace",
+    "Id": "387"
+  },
+  {
+    "Name": "Harp Crown",
+    "Id": "382"
+  },
+  {
+    "Name": "Hawk",
+    "Id": "378"
+  },
+  {
+    "Name": "Heavy Knight",
+    "Id": "371"
+  },
+  {
+    "Name": "Hermitaur",
+    "Id": "337"
+  },
+  {
+    "Name": "Hornetaur",
+    "Id": "360"
+  },
+  {
+    "Name": "Hunter",
+    "Id": "002"
+  },
+  {
+    "Name": "Ibushi - Pure",
+    "Id": "308"
+  },
+  {
+    "Name": "Ibushi",
+    "Id": "209"
+  },
+  {
+    "Name": "Ingot",
+    "Id": "031"
+  },
+  {
+    "Name": "Izuchi X",
+    "Id": "310"
+  },
+  {
+    "Name": "Izuchi",
+    "Id": "211"
+  },
+  {
+    "Name": "Jaggi Mask",
+    "Id": "257"
+  },
+  {
+    "Name": "Jaggi",
+    "Id": "216"
+  },
+  {
+    "Name": "Jelly",
+    "Id": "249"
+  },
+  {
+    "Name": "Jyuratodus X",
+    "Id": "330"
+  },
+  {
+    "Name": "Jyuratodus",
+    "Id": "011"
+  },
+  {
+    "Name": "Kaiser X",
+    "Id": "313"
+  },
+  {
+    "Name": "Kaiser",
+    "Id": "046"
+  },
+  {
+    "Name": "Kamura Cloak",
+    "Id": "271"
+  },
+  {
+    "Name": "Kamura",
+    "Id": "200"
+  },
+  {
+    "Name": "Kamurai",
+    "Id": "272"
+  },
+  {
+    "Name": "Khezu X",
+    "Id": "317"
+  },
+  {
+    "Name": "Khezu",
+    "Id": "229"
+  },
+  {
+    "Name": "Knight Squire",
+    "Id": "372"
+  },
+  {
+    "Name": "Kulu-Ya-Ku X",
+    "Id": "328"
+  },
+  {
+    "Name": "Kulu-Ya-Ku",
+    "Id": "009"
+  },
+  {
+    "Name": "Kunai Earrings",
+    "Id": "281"
+  },
+  {
+    "Name": "Kushala Daora",
+    "Id": "047"
+  },
+  {
+    "Name": "Kushala X",
+    "Id": "311"
+  },
+  {
+    "Name": "Lagombi",
+    "Id": "225"
+  },
+  {
+    "Name": "Leather Choker",
+    "Id": "286"
+  },
+  {
+    "Name": "Leather",
+    "Id": "001"
+  },
+  {
+    "Name": "Lecturer",
+    "Id": "378"
+  },
+  {
+    "Name": "Lien",
+    "Id": "363"
+  },
+  {
+    "Name": "Lucent Narga",
+    "Id": "340"
+  },
+  {
+    "Name": "Lunagaron",
+    "Id": "353"
+  },
+  {
+    "Name": "Magmadron",
+    "Id": "350"
+  },
+  {
+    "Name": "Makluva",
+    "Id": "239"
+  },
+  {
+    "Name": "Malzeno",
+    "Id": "352"
+  },
+  {
+    "Name": "Medium",
+    "Id": "246"
+  },
+  {
+    "Name": "Melahoa",
+    "Id": "238"
+  },
+  {
+    "Name": "Mighty Bow Feather",
+    "Id": "037"
+  },
+  {
+    "Name": "Mizuha",
+    "Id": "212"
+  },
+  {
+    "Name": "Mizutsune X",
+    "Id": "334"
+  },
+  {
+    "Name": "Mizutsune",
+    "Id": "228"
+  },
+  {
+    "Name": "Monksnail Hat",
+    "Id": "390"
+  },
+  {
+    "Name": "Mosgharl",
+    "Id": "240"
+  },
+  {
+    "Name": "Nargacuga",
+    "Id": "080"
+  },
+  {
+    "Name": "Narwa - Pure",
+    "Id": "309"
+  },
+  {
+    "Name": "Narwa",
+    "Id": "210"
+  },
+  {
+    "Name": "Orangaten",
+    "Id": "347"
+  },
+  {
+    "Name": "Origin",
+    "Id": "278"
+  },
+  {
+    "Name": "Orion",
+    "Id": "289"
+  },
+  {
+    "Name": "Pride",
+    "Id": "351"
+  },
+  {
+    "Name": "Professor",
+    "Id": "374"
+  },
+  {
+    "Name": "Pukei-Pukei X",
+    "Id": "329"
+  },
+  {
+    "Name": "Pukei-Pukei",
+    "Id": "010"
+  },
+  {
+    "Name": "Pyre-Kadaki",
+    "Id": "349"
+  },
+  {
+    "Name": "Qurio Crown",
+    "Id": "400"
+  },
+  {
+    "Name": "Rakna-Kadaki X",
+    "Id": "305"
+  },
+  {
+    "Name": "Rakna-Kadaki",
+    "Id": "206"
+  },
+  {
+    "Name": "Rathalos X",
+    "Id": "321"
+  },
+  {
+    "Name": "Rathalos",
+    "Id": "033"
+  },
+  {
+    "Name": "Rathian X",
+    "Id": "320"
+  },
+  {
+    "Name": "Rathian",
+    "Id": "021"
+  },
+  {
+    "Name": "Relunea",
+    "Id": "392"
+  },
+  {
+    "Name": "Remobra",
+    "Id": "219"
+  },
+  {
+    "Name": "Reverent Wrap",
+    "Id": "269"
+  },
+  {
+    "Name": "Rhenoplos",
+    "Id": "215"
+  },
+  {
+    "Name": "Rhopessa",
+    "Id": "241"
+  },
+  {
+    "Name": "Rider",
+    "Id": "254"
+  },
+  {
+    "Name": "Royal Artillery Corps",
+    "Id": "373"
+  },
+  {
+    "Name": "Royal Ludroth X",
+    "Id": "315"
+  },
+  {
+    "Name": "Royal Ludroth",
+    "Id": "227"
+  },
+  {
+    "Name": "Sailor",
+    "Id": "377"
+  },
+  {
+    "Name": "Scholar",
+    "Id": "376"
+  },
+  {
+    "Name": "Scholarly",
+    "Id": "379"
+  },
+  {
+    "Name": "Seregios",
+    "Id": "343"
+  },
+  {
+    "Name": "Shadow Shades",
+    "Id": "062"
+  },
+  {
+    "Name": "Shell-Studded",
+    "Id": "248"
+  },
+  {
+    "Name": "Silver Sol",
+    "Id": "336"
+  },
+  {
+    "Name": "Sinister Demon",
+    "Id": "300"
+  },
+  {
+    "Name": "Magnamalo MR",
+    "Id": "300"
+  },
+  {
+    "Name": "Sinister Grudge",
+    "Id": "346"
+  },
+  {
+    "Name": "Scorned Magnamalo",
+    "Id": "346"
+  },
+  {
+    "Name": "Sinister Seal",
+    "Id": "250"
+  },
+  {
+    "Name": "Magnamalo (Amiibo)",
+    "Id": "250"
+  },
+  {
+    "Name": "Sinister",
+    "Id": "201"
+  },
+  {
+    "Name": "Magnamalo",
+    "Id": "201"
+  },
+  {
+    "Name": "Skalda",
+    "Id": "245"
+  },
+  {
+    "Name": "Skull",
+    "Id": "054"
+  },
+  {
+    "Name": "Slagtoth",
+    "Id": "214"
+  },
+  {
+    "Name": "Snowshear",
+    "Id": "384"
+  },
+  {
+    "Name": "Soaring Feather",
+    "Id": "507"
+  },
+  {
+    "Name": "Somnacanth X",
+    "Id": "304"
+  },
+  {
+    "Name": "Somnacanth",
+    "Id": "205"
+  },
+  {
+    "Name": "Sonic Wear",
+    "Id": "292"
+  },
+  {
+    "Name": "Spio",
+    "Id": "245"
+  },
+  {
+    "Name": "Spiribird Earrings",
+    "Id": "283"
+  },
+  {
+    "Name": "Storge",
+    "Id": "342"
+  },
+  {
+    "Name": "Summer",
+    "Id": "395"
+  },
+  {
+    "Name": "Swallow",
+    "Id": "266"
+  },
+  {
+    "Name": "Tetranadon X",
+    "Id": "303"
+  },
+  {
+    "Name": "Tetranadon",
+    "Id": "204"
+  },
+  {
+    "Name": "Theater Wig",
+    "Id": "262"
+  },
+  {
+    "Name": "Tigrex X",
+    "Id": "322"
+  },
+  {
+    "Name": "Tigrex",
+    "Id": "083"
+  },
+  {
+    "Name": "Tobi-Kadachi X",
+    "Id": "331"
+  },
+  {
+    "Name": "Tobi-Kadachi",
+    "Id": "013"
+  },
+  {
+    "Name": "Uroktor",
+    "Id": "221"
+  },
+  {
+    "Name": "Utsushi (Hidden)",
+    "Id": "259"
+  },
+  {
+    "Name": "Utsushi (Visible)",
+    "Id": "246"
+  },
+  {
+    "Name": "Utsushi",
+    "Id": "408"
+  },
+  {
+    "Name": "Vaik",
+    "Id": "242"
+  },
+  {
+    "Name": "Velociprey",
+    "Id": "358"
+  },
+  {
+    "Name": "Vespoid",
+    "Id": "359"
+  },
+  {
+    "Name": "Volvidon",
+    "Id": "226"
+  },
+  {
+    "Name": "Woofpurr Earrings",
+    "Id": "284"
+  },
+  {
+    "Name": "Wroggi",
+    "Id": "222"
+  },
+  {
+    "Name": "Wyverian Earrings",
+    "Id": "263"
+  },
+  {
+    "Name": "Yukumo Sky",
+    "Id": "388"
+  },
+  {
+    "Name": "Zinogre X",
+    "Id": "325"
+  },
+  {
+    "Name": "Zinogre",
+    "Id": "234"
+  }
+]
