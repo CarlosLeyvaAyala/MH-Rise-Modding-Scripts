@@ -10,6 +10,7 @@
     <Compile Include="Domain\Config.fs" />
     <Compile Include="Domain\CompressWorkflow.fs" />
     <Compile Include="Config.fs" />
+    <Compile Include="InputProcessingWorkflow.fs" />
     <Compile Include="CompressWorkflow.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
