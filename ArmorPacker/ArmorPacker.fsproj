@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Domain\GlobalTypes.fs" />
+    <Compile Include="Domain\Config.fs" />
+    <Compile Include="Domain\CompressWorkflow.fs" />
+    <Compile Include="Config.fs" />
+    <Compile Include="CompressWorkflow.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DMLib\DMLib.fsproj" />
+  </ItemGroup>
+
+</Project>
