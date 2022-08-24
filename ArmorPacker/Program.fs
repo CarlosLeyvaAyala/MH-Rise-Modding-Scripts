@@ -3,6 +3,8 @@ open System
 
 [<EntryPoint>]
 let main args =
+  Console.Title <- "Armor Packer for MH Rise"
+
   let r =
     try
       args
