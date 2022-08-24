@@ -16,4 +16,9 @@ module Extensions =
   let value (Extensions ext) = ext
 
 /// <summary>Data read from the propietary <c>config.ini</c> file.</summary>
-type ConfigData = { RelDir: string; Extensions: Extensions }
+type ConfigData =
+  { RelDir: string
+    Extensions: Extensions }
+
+/// Value read from an ini file
+type IniValue = Result<string, string>

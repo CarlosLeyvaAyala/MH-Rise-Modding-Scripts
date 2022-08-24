@@ -29,9 +29,9 @@ let private batHeader zipExe outFile =
      "del %releaseFile%" |]
 
 module private Compression =
-  let zipExecute args = $"%%zipExe%% {args}"
+  let private zipExecute args = $"%%zipExe%% {args}"
 
-  let zipAdd (zipFile: ZipFile) relDir (fileName: QuotedStr) inArr =
+  let private zipAdd (zipFile: ZipFile) relDir (fileName: QuotedStr) inArr =
     let zf = ZipFile.value zipFile
     let fn = QuotedStr.value fileName
     let add = $"a -t7z %%releaseFile%% {fn} -spf2"
@@ -58,9 +58,11 @@ module private Compression =
   let qStr str = QuotedStr.create str
 
   /// Gets the MH Rise files that will be shipped for the mod.
-  let getFiles cfg outFile dirName =
+  let private getFiles cfg outFile armorOptionName dirName =
+    let relPath = Path.Combine(armorOptionName, cfg.RelDir)
+
     let toZip fileName =
-      zipAdd outFile cfg.RelDir (qStr fileName) [||]
+      zipAdd outFile relPath (qStr fileName) [||]
 
     let rx =
       @"(?i).*\.("
@@ -73,22 +75,32 @@ module private Compression =
     |> Array.collect (fun a -> a)
 
   /// Adds an optional file if it was defined.
-  let optional outFile dirName opt results =
+  let private optional outFile armorOptionName dirName opt results =
     match opt with
     | Error _ -> results
     | Ok v ->
       let q = qStr (Path.Combine(dirName, v))
-      zipAdd outFile "" q results
+      zipAdd outFile armorOptionName q results
+
+  // TODO: Move to Domain
+  let private getArmorOptionName isSingleArmorOption modinfoFile dirName =
+    if isSingleArmorOption then
+      ""
+    else
+      match Config.ModInfo.getName modinfoFile dirName with
+      | Error _ -> failwith $"A \"name\" is required inside {Path.Combine(dirName, modinfoFile)}"
+      | Ok v -> v
 
   /// Generates the strings needed to compress a whole dir as an armor option
-  let armorOption cfg modinfoFile outFile dirName =
+  let armorOption isSingleArmorOption cfg modinfoFile outFile dirName =
+    let armorOptionName = getArmorOptionName isSingleArmorOption modinfoFile dirName
     let screenshot = Config.ModInfo.getScreenShot modinfoFile dirName
     let modinfo = qStr (Path.Combine(dirName, modinfoFile))
-    let riseFiles = getFiles cfg outFile dirName
-    let optional' = optional outFile dirName
+    let riseFiles = getFiles cfg outFile armorOptionName dirName
+    let optional' = optional outFile armorOptionName dirName
 
     [||]
-    |> zipAdd outFile "" modinfo
+    |> zipAdd outFile armorOptionName modinfo
     |> optional' screenshot
     |> fun a -> Array.append a riseFiles
     |> toStrWithNl
@@ -108,8 +120,11 @@ let execute args =
   let tempBat = newFile "bat"
   let zipExe = ExeName.create @"C:\Program Files\7-Zip\7z.exe"
 
+  let processArmorOption =
+    Compression.armorOption (armorOptions.Length = 1) cfg modinfoFile outFile
+
   armorOptions
-  |> Array.map (Compression.armorOption cfg modinfoFile outFile)
+  |> Array.map processArmorOption
   |> Array.insertManyAt 0 (batHeader zipExe outFile)
   |> toStrWithNl
   |> (fun s -> s + "pause")

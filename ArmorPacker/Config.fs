@@ -12,7 +12,7 @@ let private getRawConfig fileName dir =
   else
     DMLib.IO.File.fileLines f
 
-let private getConfigValue errorMsg cfg varName =
+let private getConfigValue errorMsg cfg varName : IniValue =
   let rx = "(?i)" + varName + @"\s*=\s*(.*)"
   let regex = Regex(rx)
 
@@ -45,5 +45,9 @@ let get inDir =
   | Error e -> failwith e
 
 module ModInfo =
-  let getScreenShot fileName dir =
-    getConfigValue "" (getRawConfig fileName dir) "screenshot"
+  let private getValue fileName dir varName =
+    getConfigValue "" (getRawConfig fileName dir) varName
+
+  let getName fileName dir : IniValue = getValue fileName dir "name"
+
+  let getScreenShot fileName dir : IniValue = getValue fileName dir "screenshot"
