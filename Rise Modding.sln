@@ -5,7 +5,12 @@ VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ArmorPacker", "ArmorPacker\ArmorPacker.fsproj", "{4433B835-EE4E-42D8-A7B2-D52FDD66BE52}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DMLib", "DMLib\DMLib.fsproj", "{0C74AFA3-0CC7-4DE3-8A1D-2E93BCD487C6}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "DMLib", "DMLib\DMLib.fsproj", "{0C74AFA3-0CC7-4DE3-8A1D-2E93BCD487C6}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ArmorPacker.Tests", "ArmorPacker.Tests\ArmorPacker.Tests.fsproj", "{C1810502-DE58-430A-8E88-16AFFDB3B43D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4433B835-EE4E-42D8-A7B2-D52FDD66BE52} = {4433B835-EE4E-42D8-A7B2-D52FDD66BE52}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +26,10 @@ Global
 		{0C74AFA3-0CC7-4DE3-8A1D-2E93BCD487C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C74AFA3-0CC7-4DE3-8A1D-2E93BCD487C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C74AFA3-0CC7-4DE3-8A1D-2E93BCD487C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1810502-DE58-430A-8E88-16AFFDB3B43D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1810502-DE58-430A-8E88-16AFFDB3B43D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1810502-DE58-430A-8E88-16AFFDB3B43D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1810502-DE58-430A-8E88-16AFFDB3B43D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
