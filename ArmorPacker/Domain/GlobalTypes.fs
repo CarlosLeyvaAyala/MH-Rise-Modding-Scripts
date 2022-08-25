@@ -24,6 +24,6 @@ module QuotedStr =
 
   let value (QuotedStr fileName) = fileName
 
-  let unquote (QuotedStr fileName) = fileName[1..]
+  let unquote (QuotedStr fileName) = fileName[.. fileName.Length - 2][1..]
 
   let modify fn (fileName: QuotedStr) = fileName |> unquote |> fn |> create
