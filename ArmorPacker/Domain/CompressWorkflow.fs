@@ -2,6 +2,7 @@
 
 open DMLib.IO.Path
 open DMLib.String
+open FSharpx.Collections
 
 /// Executable file name.
 type ExeName = private ExeName of QuotedStr
@@ -14,15 +15,21 @@ module ExeName =
 type ZipFile = private ZipFile of QuotedStr
 
 module ZipFile =
+  let private fileExtension = ".7z"
+
   let private hasExtension ext (fileName: string) =
     let fn = fileName.Replace("\"", "") |> trim |> getExt
     ext = fn
 
-  let create (fileName: string) =
-    if not (hasExtension ".7z" fileName) then
-      failwith "File must have the 7z extension"
+  let private ensureExt fileName =
+
+    if not (hasExtension fileExtension fileName) then
+      fileName + fileExtension
     else
-      ZipFile(QuotedStr.create fileName)
+      fileName
+
+  let create (fileName: string) =
+    ZipFile(QuotedStr.create (fileName |> ensureExt))
 
   let value (ZipFile fileName) = fileName |> QuotedStr.value
 
@@ -46,8 +53,10 @@ type OptionInternalZipPath = OptionInternalZipPath of string
 type ArmorOption =
   { ModInfo: ModInfoIni
     Screenshot: Screenshot
-    Name: OptionInternalZipPath }
+    Name: OptionInternalZipPath
+    Files: NonEmptyList<ArmorFile> }
 
 type SingleArmorOption =
   { ModInfo: ModInfoIni
-    Screenshot: Screenshot }
+    Screenshot: Screenshot
+    Files: NonEmptyList<ArmorFile> }
