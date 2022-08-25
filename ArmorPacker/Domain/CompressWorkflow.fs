@@ -3,6 +3,7 @@
 open DMLib.IO.Path
 open DMLib.String
 open FSharpx.Collections
+open Domain
 
 /// Executable file name.
 type ExeName = private ExeName of QuotedStr
@@ -35,7 +36,17 @@ module ZipFile =
 
   let unquote (ZipFile fileName) = fileName |> QuotedStr.unquote
 
-type DrivelessPath = DrivelessPath of QuotedStr
+/// Paths created inside compressed files when 7zip adds them with the -spf2 flag.
+type DrivelessPath = private DrivelessPath of QuotedStr
+
+module DrivelessPath =
+  let create fileName =
+    fileName
+    |> removeDrive
+    |> QuotedStr.create
+    |> DrivelessPath
+
+  let value (DrivelessPath path) = path |> QuotedStr.value
 
 type FileToBeCompressed =
   { /// Full path from where it will be compressed.
@@ -45,15 +56,27 @@ type FileToBeCompressed =
     /// Actual path needed to be inside the zip file.
     RenamedZipPath: DrivelessPath }
 
+module FileToBeCompressed =
+  let create pathWhenCompressed fileName =
+    { PathOnDisk = QuotedStr.create fileName
+      AddedZipPath = DrivelessPath.create fileName
+      RenamedZipPath =
+        fileName
+        |> getFileName
+        |> combine2 pathWhenCompressed
+        |> DrivelessPath.create }
+
 type ModInfoIni = ModInfoIni of FileToBeCompressed
 type Screenshot = Screenshot of FileToBeCompressed option
 type ArmorFile = ArmorFile of FileToBeCompressed
-type OptionInternalZipPath = OptionInternalZipPath of string
+
+/// Armor option <c>name</c> taken from modinfo.ini
+type ArmorZipPath = ArmorZipPath of string
 
 type ArmorOption =
   { ModInfo: ModInfoIni
     Screenshot: Screenshot
-    Name: OptionInternalZipPath
+    Name: ArmorZipPath
     Files: NonEmptyList<ArmorFile> }
 
 type SingleArmorOption =
