@@ -36,21 +36,15 @@ module private Compression =
     let fn = QuotedStr.value fileName
     let add = $"a -t7z %%releaseFile%% {fn} -spf2"
 
-    let quote str =
-      str |> QuotedStr.create |> QuotedStr.value
-
     let oldFn =
       fileName
-      |> QuotedStr.unquote
-      |> removeDrive
-      |> quote
+      |> QuotedStr.modify removeDrive
+      |> QuotedStr.value
 
     let newFn =
       fileName
-      |> QuotedStr.unquote
-      |> getFileName
-      |> (fun s -> Path.Combine(relDir, s))
-      |> quote
+      |> QuotedStr.modify (fun s -> s |> getFileName |> combine2 relDir)
+      |> QuotedStr.value
 
     let rename = $"rn %%releaseFile%% {oldFn} {newFn}"
     Array.append inArr [| zipExecute add; zipExecute rename |]

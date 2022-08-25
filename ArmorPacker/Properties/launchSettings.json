@@ -1,7 +1,8 @@
 {
   "profiles": {
     "ArmorPacker": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\Osrail\\Documents\\GitHub\\MH-Rise-EBB-Armors\\080 Nargacuga\\EBB Nargacuga - Mesh Bikini.txt\""
     }
   }
 }

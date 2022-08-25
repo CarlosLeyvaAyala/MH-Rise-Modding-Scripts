@@ -3,7 +3,7 @@
 /// Full parameters needed to start processing files.
 type FullParams = { InputDir: string; OutFile: string }
 
-/// String surrounded by quotes.
+/// String surrounded by quotes. Used to send command line instructions to compress files.
 type QuotedStr = private QuotedStr of string
 
 module QuotedStr =
@@ -25,3 +25,5 @@ module QuotedStr =
   let value (QuotedStr fileName) = fileName
 
   let unquote (QuotedStr fileName) = fileName[1..]
+
+  let modify fn (fileName: QuotedStr) = fileName |> unquote |> fn |> create

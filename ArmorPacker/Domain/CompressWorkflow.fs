@@ -27,3 +27,27 @@ module ZipFile =
   let value (ZipFile fileName) = fileName |> QuotedStr.value
 
   let unquote (ZipFile fileName) = fileName |> QuotedStr.unquote
+
+type DrivelessPath = DrivelessPath of QuotedStr
+
+type FileToBeCompressed =
+  { /// Full path from where it will be compressed.
+    PathOnDisk: QuotedStr
+    /// Path created by 7zip once it was added to a file.
+    AddedZipPath: DrivelessPath
+    /// Actual path needed to be inside the zip file.
+    RenamedZipPath: DrivelessPath }
+
+type ModInfoIni = ModInfoIni of FileToBeCompressed
+type Screenshot = Screenshot of FileToBeCompressed option
+type ArmorFile = ArmorFile of FileToBeCompressed
+type OptionInternalZipPath = OptionInternalZipPath of string
+
+type ArmorOption =
+  { ModInfo: ModInfoIni
+    Screenshot: Screenshot
+    Name: OptionInternalZipPath }
+
+type SingleArmorOption =
+  { ModInfo: ModInfoIni
+    Screenshot: Screenshot }
