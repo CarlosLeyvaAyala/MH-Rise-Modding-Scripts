@@ -83,3 +83,15 @@ type SingleArmorOption =
   { ModInfo: ModInfoIni
     Screenshot: Screenshot
     Files: NonEmptyList<ArmorFile> }
+
+type ManyArmorOptions = NonEmptyList<ArmorOption>
+
+type ArmorOptionsInFile =
+  | ManyArmorOptions
+  | SingleArmorOption
+
+type ArmorOptionsError =
+  | NoArmorOptions of string
+  | NoFilesToPack of string
+
+type GetArmorOptions = string -> string -> Result<ArmorOptionsInFile, ArmorOptionsError>

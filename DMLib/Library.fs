@@ -45,3 +45,13 @@ module Combinators =
   let tap f x =
     f
     x
+
+  let fork f g x = (f x), (g x)
+
+  let join2 aTuple =
+    match fst aTuple with
+    | Error e -> Error e
+    | Ok v1 ->
+      match snd aTuple with
+      | Error e -> Error e
+      | Ok v2 -> Ok(v1, v2)

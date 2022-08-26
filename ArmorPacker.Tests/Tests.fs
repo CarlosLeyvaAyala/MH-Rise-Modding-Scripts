@@ -4,6 +4,7 @@ open System
 open Xunit
 open Domain
 open FsUnit.Xunit
+open FSharpx.Collections
 
 module ``Domain Validation Tests`` =
   let testStr = "Test" |> QuotedStr.create
@@ -50,12 +51,5 @@ module ``Domain Validation Tests`` =
 
   [<Fact>]
   let ``Compressed file complete name ready to distribute`` () =
-    compressedFile.RenamedZipPath
-    |> should not' (equal "lololol")
-
-  [<Fact>]
-  let ``Non empty list`` () =
-    let x = NonEmptyList<string>
-
     compressedFile.RenamedZipPath
     |> should not' (equal "lololol")
