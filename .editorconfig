@@ -1,2 +1,3 @@
+# https://github.com/fsprojects/fantomas/blob/master/docs/docs/end-users/Configuration.md
 [*.{fs,fsx}]
 indent_size=2

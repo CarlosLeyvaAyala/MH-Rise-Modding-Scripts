@@ -5,7 +5,9 @@ open System.Text.RegularExpressions
 open Domain
 open FSharpx.Collections
 open DMLib.IO.Path
-open DMLib.Combinators
+open DMLib
+
+let private configFileName = "config.ini"
 
 let private getIniFileContents: GetIniFileContents =
   fun iniPath ->
@@ -18,14 +20,6 @@ let private getIniFileContents: GetIniFileContents =
       |> DMLib.IO.File.fileLines
       |> IniFileContents
       |> Ok
-
-// TODO Delete
-//let private getRawConfig fileName dir =
-//  let f = Path.Combine(dir, fileName)
-//  if not (File.Exists(f)) then
-//    failwith $"File \"{f}\" must exist before we can continue."
-//  else
-//    DMLib.IO.File.fileLines f
 
 let private getConfigValues varName (IniFileContents cfg) =
   let rx = "(?i)" + varName + @"\s*=\s*(.*)"
@@ -57,18 +51,6 @@ let private getValue: GetConfigValue =
           $"Your config.ini file has many variables named {varName}. If you only have one of those, tell the programmer to stop being a noob."
       )
 
-// TODO: Delete
-//let private getConfigValue errorMsg cfg varName : IniValue =
-//  let rx = "(?i)" + varName + @"\s*=\s*(.*)"
-//  let regex = Regex(rx)
-//  match cfg
-//        |> Array.filter (fun s -> regex.Match(s).Success)
-//    with
-//  | [||] -> Error(NoValue errorMsg)
-//  | [| l |] -> Ok(regex.Match(l).Groups[1].Value)
-//  | _ ->
-//    Error(ManyVariables $"Your config.ini file has many variables named {varName}. You should have only one of those.")
-
 let private getExtensions cfg =
   Extensions.create (
     match getValue (NoConfigValueError "") "extensions" cfg with
@@ -82,23 +64,51 @@ let private getModInternalPath =
 
   getValue (NoConfigValueError error) "modInternalPath"
 
-let private createCfgData (aTuple: IniValue * Extensions) =
-  match fst aTuple with
-  | Error e -> Error e
-  | Ok r -> Ok { RelDir = r; Extensions = snd aTuple }
+/// Common operations when reading file contents.
+let internal getIniContentsForVarReading dir fileName =
+  (combine2 dir fileName)
+  |> getIniFileContents
+  |> Result.mapError NoFileError
+
+/// Extracts the string from a ConfigError.
+let internal extractErrorMsg =
+  function
+  | NoFileError (InexistentIniFileError e) -> e
+  | ValueError v ->
+    match v with
+    | NoValue (NoConfigValueError n) -> n
+    | ManyVariables v -> v
 
 let get: GetConfigData =
   fun inDir ->
-    getIniFileContents (combine2 inDir "config.ini")
-    |> fork (Result.map getModInternalPath) (Result.map getExtensions)
-    |> join2
-    |> Result.mapError NoFileError
-    |> Result.bind (createCfgData >> Result.mapError ValueError)
+    result {
+      let! contents = getIniContentsForVarReading inDir configFileName
+
+      let! relPath =
+        contents
+        |> getModInternalPath
+        |> Result.mapError ValueError
+
+      let ext = contents |> getExtensions
+      return { RelDir = relPath; Extensions = ext }
+    }
+    |> ErrorMsg.map extractErrorMsg
 
 module ModInfo =
-  let private getValue fileName dir varName =
-    getConfigValue "" (getRawConfig fileName dir) varName
+  let private getValue error fileName dir varName =
+    result {
+      let! contents = getIniContentsForVarReading dir fileName
 
-  let getName fileName dir : IniValue = getValue fileName dir "name"
+      let! value =
+        getValue (NoConfigValueError error) varName contents
+        |> Result.mapError ValueError
 
-  let getScreenShot fileName dir : IniValue = getValue fileName dir "screenshot"
+      return value
+    }
+    |> ErrorMsg.map extractErrorMsg
+
+  let getName fileName dir =
+    getValue $"A mod option must have a name defined in {fileName}" fileName dir "name"
+
+  let getScreenShot fileName dir =
+    getValue "Screenshots are optional. Ignore this error." fileName dir "screenshot"

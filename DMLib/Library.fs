@@ -55,3 +55,70 @@ module Combinators =
       match snd aTuple with
       | Error e -> Error e
       | Ok v2 -> Ok(v1, v2)
+
+module OutputAccumulator =
+  type InputOutputPair<'i, 'o> = 'i * 'o array
+
+  let private append args v =
+    fst args, Array.append (snd args) [| v |]
+
+  let bind f (args: InputOutputPair<'i, 'o>) =
+    match f (fst args) with
+    | Ok v -> Ok(append args v)
+    | Error e -> Error e
+
+  let map f (args: InputOutputPair<'i, 'o>) = append args (args |> fst |> f)
+
+  let start x = x, [||]
+
+[<AutoOpen>]
+module ResultComputationExpression =
+
+  type ResultBuilder() =
+    member __.Return(x) = Ok x
+    member __.Bind(x, f) = Result.bind f x
+
+    member __.ReturnFrom(x) = x
+    member this.Zero() = this.Return()
+
+    member __.Delay(f) = f
+    member __.Run(f) = f ()
+
+    member this.While(guard, body) =
+      if not (guard ()) then
+        this.Zero()
+      else
+        this.Bind(body (), (fun () -> this.While(guard, body)))
+
+    member this.TryWith(body, handler) =
+      try
+        this.ReturnFrom(body ())
+      with
+      | e -> handler e
+
+    member this.TryFinally(body, compensation) =
+      try
+        this.ReturnFrom(body ())
+      finally
+        compensation ()
+
+    member this.Using(disposable: #System.IDisposable, body) =
+      let body' = fun () -> body disposable
+
+      this.TryFinally(
+        body',
+        fun () ->
+          match disposable with
+          | null -> ()
+          | disp -> disp.Dispose()
+      )
+
+    member this.For(sequence: seq<_>, body) =
+      this.Using(
+        sequence.GetEnumerator(),
+        fun enum -> this.While(enum.MoveNext, this.Delay(fun () -> body enum.Current))
+      )
+
+    member this.Combine(a, b) = this.Bind(a, (fun () -> b ()))
+
+  let result = new ResultBuilder()

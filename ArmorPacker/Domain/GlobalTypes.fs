@@ -27,3 +27,11 @@ module QuotedStr =
   let unquote (QuotedStr fileName) = fileName[.. fileName.Length - 2][1..]
 
   let modify fn (fileName: QuotedStr) = fileName |> unquote |> fn |> create
+
+type ErrorMsg = ErrorMsg of string
+
+module ErrorMsg =
+  let map errorExtractor x =
+    match x with
+    | Ok v -> Ok v
+    | Error e -> e |> errorExtractor |> ErrorMsg |> Error

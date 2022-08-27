@@ -2,6 +2,8 @@
 
 open System.Text.RegularExpressions
 
+type IniVariableValue = string
+
 /// <summary>Extensions used for searching which files will be compressed.</summary>
 /// <remarks>Internally, these are a regular expression.</remarks>
 type Extensions = private Extensions of string
@@ -13,7 +15,7 @@ module Extensions =
       .Replace(".", @"\.")
     |> Extensions
 
-  let value (Extensions ext) = ext
+  let value (Extensions ext) : IniVariableValue = ext
 
 /// Variables inside an ini file.
 type IniFileContents = IniFileContents of string array
@@ -30,8 +32,6 @@ type NoConfigValueError = NoConfigValueError of string
 type IniValueError =
   | NoValue of NoConfigValueError
   | ManyVariables of string
-
-type IniVariableValue = string
 
 /// Value read from an ini file
 type IniValue = Result<IniVariableValue, IniValueError>
@@ -51,4 +51,4 @@ type ConfigData =
 /// Path of the dir the user wants to process
 type DirToProcess = string
 
-type GetConfigData = DirToProcess -> Result<ConfigData, ConfigError>
+type GetConfigData = DirToProcess -> Result<ConfigData, ErrorMsg>
