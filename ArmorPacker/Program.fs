@@ -1,21 +1,26 @@
 ﻿// For more information see https://aka.ms/fsharp-console-apps
 open System
 
+let returnError msg =
+  printfn "Error:\n%s" msg
+  Console.ReadKey() |> ignore
+  1
+
 [<EntryPoint>]
 let main args =
   Console.Title <- "Armor Packer for MH Rise"
 
   let r =
     try
-      args
-      |> InputProcessingWorkflow.getInput
-      |> CompressWorkflow.execute
+      let r =
+        args
+        |> InputProcessingWorkflow.getInput
+        |> CompressWorkflow.execute
 
-      0
+      match r with
+      | Ok _ -> 0
+      | Error e -> returnError e
     with
-    | _ as e ->
-      printfn "Error:\n%s" e.Message
-      Console.ReadKey() |> ignore
-      1
+    | _ as e -> returnError e.Message
 
   r

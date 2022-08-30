@@ -25,6 +25,11 @@ module IO =
     let combine3 p1 p2 p3 = Path.Combine(p1, p2, p3)
     let combine4 p1 p2 p3 p4 = Path.Combine(p1, p2, p3, p4)
 
+    let (|IsDir|_|) path =
+      match File.GetAttributes(path: string) with
+      | FileAttributes.Directory -> Some path
+      | _ -> None
+
   module File =
     let fileLines fileName =
       File.ReadAllText(fileName).Split("\n")

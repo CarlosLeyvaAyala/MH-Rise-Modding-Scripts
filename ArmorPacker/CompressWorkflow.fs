@@ -6,6 +6,7 @@ open DMLib.String
 open System.IO
 open System.Text.RegularExpressions
 open System.Diagnostics
+open DMLib.ResultComputationExpression
 
 let private outFileName dir fileName ext = Path.Combine(dir, $"{fileName}.{ext}")
 
@@ -100,29 +101,30 @@ module private Compression =
     |> toStrWithNl
 
 let execute args =
-  let modinfoFile = "modinfo.ini"
-  let cfg = Config.get args.InputDir
+  result {
+    let modinfoFile = "modinfo.ini"
+    let! cfg = Config.get args.InputDir
 
-  let baseDir =
-    args.InputDir
-    |> trimEndingDirectorySeparator
-    |> getDir
+    let baseDir =
+      args.InputDir
+      |> trimEndingDirectorySeparator
+      |> getDir
 
-  let armorOptions = getArmorOptions args.InputDir modinfoFile
-  let newFile = outFileName baseDir args.OutFile
-  let outFile = newFile "7z" |> ZipFile.create
-  let tempBat = newFile "bat"
-  let zipExe = ExeName.create @"C:\Program Files\7-Zip\7z.exe"
+    let armorOptions = getArmorOptions args.InputDir modinfoFile
+    let newFile = outFileName baseDir args.OutFile
+    let outFile = newFile "7z" |> ZipFile.create
+    let tempBat = newFile "bat"
 
-  let processArmorOption =
-    Compression.armorOption (armorOptions.Length = 1) cfg modinfoFile outFile
+    let processArmorOption =
+      Compression.armorOption (armorOptions.Length = 1) cfg modinfoFile outFile
 
-  armorOptions
-  |> Array.map processArmorOption
-  |> Array.insertManyAt 0 (batHeader zipExe outFile)
-  |> toStrWithNl
-  |> (fun s -> s + "pause")
-  |> trim
-  |> (fun s -> File.WriteAllText(tempBat, s))
+    armorOptions
+    |> Array.map processArmorOption
+    |> Array.insertManyAt 0 (batHeader args.ZipExe outFile)
+    |> toStrWithNl
+    |> (fun s -> s + "pause")
+    |> trim
+    |> (fun s -> File.WriteAllText(tempBat, s))
 
-  Process.Start(tempBat) |> ignore
+    Process.Start(tempBat) |> ignore
+  }

@@ -9,6 +9,9 @@
     <Compile Include="Domain\GlobalTypes.fs" />
     <Compile Include="Domain\Config.fs" />
     <Compile Include="Domain\CompressWorkflow.fs" />
+    <Content Include="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Config.fs" />
     <Compile Include="InputProcessingWorkflow.fs" />
     <Compile Include="CompressWorkflow.fs" />

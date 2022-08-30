@@ -1,7 +1,7 @@
 ﻿namespace Domain
 
-/// Full parameters needed to start processing files.
-type FullParams = { InputDir: string; OutFile: string }
+open System.IO
+open System
 
 /// String surrounded by quotes. Used to send command line instructions to compress files.
 type QuotedStr = private QuotedStr of string
@@ -28,10 +28,46 @@ module QuotedStr =
 
   let modify fn (fileName: QuotedStr) = fileName |> unquote |> fn |> create
 
-type ErrorMsg = ErrorMsg of string
+type ErrorMsg = string
 
 module ErrorMsg =
   let map errorExtractor x =
     match x with
     | Ok v -> Ok v
-    | Error e -> e |> errorExtractor |> ErrorMsg |> Error
+    | Error e -> e |> errorExtractor |> Error
+
+/// Executable file name.
+type ExeName = private ExeName of QuotedStr
+
+module ExeName =
+  let private checkFileExists jsonPath q fileName =
+    if not (File.Exists(fileName)) then
+      failwith
+        $"7zip executable {QuotedStr.value q} does not exist. If you have installed it somewhere else, make sure to modify {QuotedStr.value jsonPath}."
+
+    fileName
+
+  let private checkExe q (fileName: string) =
+    let exe = "7z.exe"
+
+    if not (fileName.ToLower().EndsWith(exe)) then
+      failwith $"v22.01"
+
+    q
+
+  let create jsonPath fileName =
+    let q = fileName |> QuotedStr.create
+    let jsonPath' = jsonPath |> QuotedStr.create
+
+    fileName
+    |> checkFileExists jsonPath' q
+    |> checkExe q
+    |> ExeName
+
+  let value (ExeName fileName) = fileName |> QuotedStr.value
+
+/// Full parameters needed to start processing files.
+type FullParams =
+  { InputDir: string
+    OutFile: string
+    ZipExe: ExeName }

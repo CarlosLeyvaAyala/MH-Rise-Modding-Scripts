@@ -5,13 +5,6 @@ open DMLib.String
 open FSharpx.Collections
 open Domain
 
-/// Executable file name.
-type ExeName = private ExeName of QuotedStr
-
-module ExeName =
-  let create fileName = fileName |> QuotedStr.create |> ExeName
-  let value (ExeName fileName) = fileName |> QuotedStr.value
-
 /// Name for the compressed distributable file.
 type ZipFile = private ZipFile of QuotedStr
 
