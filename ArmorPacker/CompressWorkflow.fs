@@ -86,9 +86,24 @@ module private Compression =
       | Error _ -> failwith $"A \"name\" is required inside {Path.Combine(dirName, modinfoFile)}"
       | Ok v -> v
 
+  let normalizeName prefix (optionName: string) =
+    let n = prefix + " " + optionName
+
+    let s =
+      n
+        .Replace(",", " ")
+        .Replace("-", " ")
+        .ToLower()
+        .Trim()
+
+    Regex(@"\s+").Replace(s, "_")
+
   /// Generates the strings needed to compress a whole dir as an armor option
   let armorOption isSingleArmorOption cfg modinfoFile outFile dirName =
-    let armorOptionName = getArmorOptionName isSingleArmorOption modinfoFile dirName
+    let armorOptionName =
+      getArmorOptionName isSingleArmorOption modinfoFile dirName
+      |> normalizeName cfg.OptionsPrefix
+
     let screenshot = Config.ModInfo.getScreenShot modinfoFile dirName
     let modinfo = qStr (Path.Combine(dirName, modinfoFile))
     let riseFiles = getFiles cfg outFile armorOptionName dirName

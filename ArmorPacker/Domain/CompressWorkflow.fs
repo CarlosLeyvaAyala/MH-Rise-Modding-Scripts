@@ -60,22 +60,45 @@ module FileToBeCompressed =
         |> DrivelessPath.create }
 
 type ModInfoIni = ModInfoIni of FileToBeCompressed
-type Screenshot = Screenshot of FileToBeCompressed option
+type Screenshot = Screenshot of FileToBeCompressed
 type ArmorFile = ArmorFile of FileToBeCompressed
 
 /// Armor option <c>name</c> taken from modinfo.ini
 type ArmorZipPath = ArmorZipPath of string
 
+type ArmorOptionValues =
+  { Name: GetModInfoVariable
+    Screenshot: GetModInfoVariable }
+
 type ArmorOption =
   { ModInfo: ModInfoIni
-    Screenshot: Screenshot
+    Screenshot: Screenshot option
     Name: ArmorZipPath
     Files: NonEmptyList<ArmorFile> }
 
 type SingleArmorOption =
   { ModInfo: ModInfoIni
-    Screenshot: Screenshot
+    Screenshot: Screenshot option
     Files: NonEmptyList<ArmorFile> }
+
+module SingleArmorOption =
+  let getScreenshot (getter: GetModInfoVariable) modInfoFile dir =
+    match getter modInfoFile dir with
+    | Error _ -> None
+    | Ok v ->
+      let screen =
+        FileToBeCompressed.create "" (combine2 dir modInfoFile)
+        |> Screenshot
+
+      Some screen
+
+  let getModInfo modInfoFile dir = 
+    FileToBeCompressed.create "" (combine2 dir modInfoFile) |> ModInfoIni
+  /// Creates a single armor option from a given dir.
+  let create (getters: ArmorOptionValues) modInfoFile dir =
+    let modInfo = FileToBeCompressed.create "" (combine2 dir modInfoFile)
+    let screenshot = getters.Screenshot modInfoFile dir
+    modInfo
 
 type ManyArmorOptions = NonEmptyList<ArmorOption>
 

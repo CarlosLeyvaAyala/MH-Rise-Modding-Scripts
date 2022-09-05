@@ -60,9 +60,15 @@ let private getExtensions cfg =
 
 let private getModInternalPath =
   let error =
-    "You need to define the modInternalPath variable in your ini file, otherwise where would your mod files be installed by Fluffy?"
+    "You need to define the \"modInternalPath\" variable in your ini file, otherwise where would your mod files be installed by Fluffy?"
 
   getValue (NoConfigValueError error) "modInternalPath"
+
+let private getOptionsPrefix =
+  let error =
+    "You need to define the \"optionsPrefix\" variable in your ini file, otherwise you may get name conflicts inside Fluffy."
+
+  getValue (NoConfigValueError error) "optionsPrefix"
 
 /// Common operations when reading file contents.
 let internal getIniContentsForVarReading dir fileName =
@@ -84,13 +90,17 @@ let get: GetConfigData =
     result {
       let! contents = getIniContentsForVarReading inDir configFileName
 
-      let! relPath =
-        contents
-        |> getModInternalPath
-        |> Result.mapError ValueError
+      let getRequiredValue f =
+        contents |> f |> Result.mapError ValueError
 
+      let! relPath = getRequiredValue getModInternalPath
+      let! optionsPrefix = getRequiredValue getOptionsPrefix
       let ext = contents |> getExtensions
-      return { RelDir = relPath; Extensions = ext }
+
+      return
+        { RelDir = relPath
+          Extensions = ext
+          OptionsPrefix = optionsPrefix }
     }
     |> ErrorMsg.map extractErrorMsg
 
@@ -107,8 +117,8 @@ module ModInfo =
     }
     |> ErrorMsg.map extractErrorMsg
 
-  let getName fileName dir =
-    getValue $"A mod option must have a name defined in {fileName}" fileName dir "name"
+  let getName: GetModInfoVariable =
+    fun fileName dir -> getValue $"A mod option must have a name defined in {fileName}" fileName dir "name"
 
-  let getScreenShot fileName dir =
-    getValue "Screenshots are optional. Ignore this error." fileName dir "screenshot"
+  let getScreenShot: GetModInfoVariable =
+    fun fileName dir -> getValue "Screenshots are optional. Ignore this error." fileName dir "screenshot"

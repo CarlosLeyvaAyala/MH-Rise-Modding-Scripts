@@ -46,9 +46,16 @@ type ConfigError =
 /// <summary>Data read from the propietary <c>config.ini</c> file.</summary>
 type ConfigData =
   { RelDir: string
-    Extensions: Extensions }
+    Extensions: Extensions
+    OptionsPrefix: string }
 
 /// Path of the dir the user wants to process
 type DirToProcess = string
 
 type GetConfigData = DirToProcess -> Result<ConfigData, ErrorMsg>
+
+/// "modinfo.ini" as per current Fluffy settings
+type ModInfoFileName = string
+
+/// Get variable value from modinfo.ini
+type GetModInfoVariable = ModInfoFileName -> IniFilePath -> Result<IniVariableValue, ErrorMsg>

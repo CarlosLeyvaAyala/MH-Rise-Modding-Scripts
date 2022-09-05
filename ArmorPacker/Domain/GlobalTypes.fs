@@ -51,7 +51,8 @@ module ExeName =
     let exe = "7z.exe"
 
     if not (fileName.ToLower().EndsWith(exe)) then
-      failwith $"v22.01"
+      failwith
+        $"Your 7zip executable must be named \"{exe}\" (last tested with 7zip v22.01, which is guaranteed to have a file named like that)."
 
     q
 

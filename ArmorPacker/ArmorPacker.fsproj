@@ -16,7 +16,10 @@
     <Compile Include="InputProcessingWorkflow.fs" />
     <Compile Include="CompressWorkflow.fs" />
     <Compile Include="Program.fs" />
+    <None Include="scratchpad.fsx" />
   </ItemGroup>
+
+  <ItemGroup />
 
   <ItemGroup>
     <PackageReference Include="FSharpx.Collections" Version="3.0.1" />

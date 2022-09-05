@@ -4,6 +4,16 @@ open System.Text.RegularExpressions
 open System
 open System.IO
 
+let prefix = "sick gains 210"
+let opt = "Legs 05 - Exhibitionist, no thigh"
+
+let normalizeName prefix (optionName: string) =
+  let n = prefix + " " + optionName
+  let s = n.Replace(",", " ").Replace("-", " ").ToLower()
+  Regex(@"\s+").Replace(s, "_")
+
+normalizeName prefix opt
+
 let fileLines fileName =
   File.ReadAllText(fileName).Split("\n")
   |> Array.map (fun s -> s.TrimEnd())
