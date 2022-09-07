@@ -4,6 +4,10 @@ open DMLib.IO.Path
 open DMLib.String
 open FSharpx.Collections
 open Domain
+open DMLib.ResultComputationExpression
+open System.Text.RegularExpressions
+
+type PathContainingModinfoIni = string
 
 /// Name for the compressed distributable file.
 type ZipFile = private ZipFile of QuotedStr
@@ -64,17 +68,86 @@ type Screenshot = Screenshot of FileToBeCompressed
 type ArmorFile = ArmorFile of FileToBeCompressed
 
 /// Armor option <c>name</c> taken from modinfo.ini
-type ArmorZipPath = ArmorZipPath of string
+type ArmorZipPath = private ArmorZipPath of string
+
+module ArmorZipPath =
+  let create prefix (optionName: string) =
+    let n = prefix + " " + optionName
+
+    let s =
+      n
+        .Replace(",", " ")
+        .Replace("-", " ")
+        .ToLower()
+        .Trim()
+
+    Regex(@"\s+").Replace(s, "_") |> ArmorZipPath
+
+  let value (ArmorZipPath path) = path
 
 type ArmorOptionValues =
   { Name: GetModInfoVariable
     Screenshot: GetModInfoVariable }
+
+type ArmorOptionCreationData =
+  { Config: ConfigData
+    Getters: ArmorOptionValues
+    ModInfoFile: ModInfoFileName
+    Dir: PathContainingModinfoIni }
 
 type ArmorOption =
   { ModInfo: ModInfoIni
     Screenshot: Screenshot option
     Name: ArmorZipPath
     Files: NonEmptyList<ArmorFile> }
+
+module ArmorOption =
+  let private getOptional modInfoFile dir compress fileToBeCompressed (getter: GetModInfoVariable) fileType =
+    match getter modInfoFile dir with
+    | Error _ -> None
+    | Ok v ->
+      let optional = compress (fileToBeCompressed v) |> fileType
+      Some optional
+
+  let private validateScreenshot (screenshot: Screenshot option) =
+    match screenshot with
+    | None -> Ok None
+    | Some v ->
+      let (Screenshot v') = v
+      let fileName = v'.PathOnDisk |> QuotedStr.unquote
+
+      if not (System.IO.File.Exists(fileName)) then
+        Error(
+          $"Screenshot file \"{fileName}\" does not exist.\nCheck the modinfo.ini file for that armor option and make sure that screenshot file exists on disk."
+          |> ErrorMsg
+        )
+      else
+        Ok(Some v)
+
+  let create (d: ArmorOptionCreationData) =
+    let modInfoFile = d.ModInfoFile
+    let dir = d.Dir
+
+    result {
+      let! optionName = d.Getters.Name modInfoFile dir
+
+      let optionName' = ArmorZipPath.create d.Config.OptionsPrefix optionName
+
+      let compress = FileToBeCompressed.create (ArmorZipPath.value optionName')
+      let fileToBeCompressed = combine2 dir
+
+      let getOptional' = getOptional modInfoFile dir compress fileToBeCompressed
+
+      let zippedModInfo =
+        compress (fileToBeCompressed modInfoFile)
+        |> ModInfoIni
+
+      let! zippedScreenshot =
+        getOptional' d.Getters.Screenshot Screenshot
+        |> validateScreenshot
+
+      return zippedScreenshot
+    }
 
 type SingleArmorOption =
   { ModInfo: ModInfoIni
@@ -92,8 +165,10 @@ module SingleArmorOption =
 
       Some screen
 
-  let getModInfo modInfoFile dir = 
-    FileToBeCompressed.create "" (combine2 dir modInfoFile) |> ModInfoIni
+  let getModInfo modInfoFile dir =
+    FileToBeCompressed.create "" (combine2 dir modInfoFile)
+    |> ModInfoIni
+
   /// Creates a single armor option from a given dir.
   let create (getters: ArmorOptionValues) modInfoFile dir =
     let modInfo = FileToBeCompressed.create "" (combine2 dir modInfoFile)

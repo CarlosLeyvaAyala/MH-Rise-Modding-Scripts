@@ -22,14 +22,15 @@ let private getIniFileContents: GetIniFileContents =
       |> Ok
 
 let private getConfigValues varName (IniFileContents cfg) =
-  let rx = "(?i)" + varName + @"\s*=\s*(.*)"
+  let rx = "(?i)^" + varName + @"\s*=\s*(.*)"
   let regex = Regex(rx)
 
   let (|VarValue|_|) s =
     let m = regex.Match(s)
 
     if m.Success then
-      Some(m.Groups[1].Value)
+      let v = m.Groups[1].Value
+      if v.Trim() = "" then None else Some(v)
     else
       None
 

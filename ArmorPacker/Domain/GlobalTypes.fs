@@ -3,6 +3,10 @@
 open System.IO
 open System
 
+type DirToProcess = string
+/// modinfo.ini
+type ModInfoFileName = string
+
 /// String surrounded by quotes. Used to send command line instructions to compress files.
 type QuotedStr = private QuotedStr of string
 
@@ -69,6 +73,6 @@ module ExeName =
 
 /// Full parameters needed to start processing files.
 type FullParams =
-  { InputDir: string
+  { InputDir: DirToProcess
     OutFile: string
     ZipExe: ExeName }
