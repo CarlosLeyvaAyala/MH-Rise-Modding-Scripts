@@ -17,6 +17,18 @@ module Extensions =
 
   let value (Extensions ext) : IniVariableValue = ext
 
+  /// Regular expression used to see if some file name matches the extension list.
+  let fileFilterRegex (Extensions ext) = @"(?i).*\.(" + ext + @")\.\d+.*"
+
+  let getNoFilesError (Extensions ext) =
+    let t =
+      ext.Split("|")
+      |> Array.map (fun e -> $"*.{e}.bunchOfWeirdNumbers")
+      |> DMLib.String.toStrWithNl
+
+    $"No file with any of these extensions was found:\n\n{t}\nMake sure you either add those files to your mod or set what extensions to search for in config.ini"
+    |> ErrorMsg
+
 /// Variables inside an ini file.
 type IniFileContents = IniFileContents of string array
 

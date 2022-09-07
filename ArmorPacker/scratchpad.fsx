@@ -25,7 +25,9 @@ let d =
     Config = cfg
     Getters = getters }
 
+printfn "***************************************"
 ArmorOption.create d |> printfn "%A"
+printfn "***************************************"
 
 /////////////////////////////////////
 

@@ -6,6 +6,7 @@ open FSharpx.Collections
 open Domain
 open DMLib.ResultComputationExpression
 open System.Text.RegularExpressions
+open System.IO
 
 type PathContainingModinfoIni = string
 
@@ -67,6 +68,23 @@ type ModInfoIni = ModInfoIni of FileToBeCompressed
 type Screenshot = Screenshot of FileToBeCompressed
 type ArmorFile = ArmorFile of FileToBeCompressed
 
+module ArmorFile =
+  let create compress fileToBeCompressed extensions fileName =
+    if not (File.Exists(fileName)) then
+      None
+    else
+      let fn = Path.GetFileName(fileName)
+      let rx = Extensions.fileFilterRegex extensions
+
+      if Regex(rx).Match(fn).Success then
+        let zippedFile =
+          compress (fileToBeCompressed fileName)
+          |> ArmorFile
+
+        Some zippedFile
+      else
+        None
+
 /// Armor option <c>name</c> taken from modinfo.ini
 type ArmorZipPath = private ArmorZipPath of string
 
@@ -102,6 +120,17 @@ type ArmorOption =
     Files: NonEmptyList<ArmorFile> }
 
 module ArmorOption =
+  let private getFiles compress fileToBeCompressed extensions dirName =
+    let files =
+      Directory.GetFiles(dirName, "*.*", SearchOption.AllDirectories)
+      |> Array.map (ArmorFile.create compress fileToBeCompressed extensions)
+      |> Array.catOptions
+      |> Array.toList
+
+    match files with
+    | [] -> Error(Extensions.getNoFilesError extensions)
+    | head :: tail -> Ok(NonEmptyList.create head tail)
+
   let private getOptional modInfoFile dir compress fileToBeCompressed (getter: GetModInfoVariable) fileType =
     match getter modInfoFile dir with
     | Error _ -> None
@@ -146,7 +175,13 @@ module ArmorOption =
         getOptional' d.Getters.Screenshot Screenshot
         |> validateScreenshot
 
-      return zippedScreenshot
+      let! files = getFiles compress fileToBeCompressed d.Config.Extensions dir
+
+      return
+        { ModInfo = zippedModInfo
+          Screenshot = zippedScreenshot
+          Name = optionName'
+          Files = files }
     }
 
 type SingleArmorOption =
