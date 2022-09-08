@@ -3,7 +3,9 @@
 open System.IO
 open System
 
+/// Path of the dir the user wants to process
 type DirToProcess = string
+
 /// modinfo.ini
 type ModInfoFileName = string
 

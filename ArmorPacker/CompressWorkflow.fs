@@ -6,20 +6,10 @@ open DMLib.String
 open System.IO
 open System.Text.RegularExpressions
 open System.Diagnostics
-open DMLib.ResultComputationExpression
+open FSharpx.Collections
+open Config
 
 let private outFileName dir fileName ext = Path.Combine(dir, $"{fileName}.{ext}")
-
-/// Gets a list of subfolders. Each subfolder is a different armor option.
-let private getArmorOptions inDir modInfoFile =
-  let o =
-    Directory.GetFiles(inDir, modInfoFile, SearchOption.AllDirectories)
-    |> Array.map getDir
-
-  if o.Length < 1 then
-    failwith $"Put a {modInfoFile} file inside each folder you want to pack."
-
-  o
 
 let private batHeader zipExe outFile =
   let o = ZipFile.value outFile
@@ -115,26 +105,166 @@ module private Compression =
     |> fun a -> Array.append a riseFiles
     |> toStrWithNl
 
+module ArmorOption =
+  let private getFiles compress fileToBeCompressed extensions dirName =
+    let files =
+      Directory.GetFiles(dirName, "*.*", SearchOption.AllDirectories)
+      |> Array.map (ArmorFile.create compress fileToBeCompressed extensions)
+      |> Array.catOptions
+      |> Array.toList
+
+    match files with
+    | [] ->
+      Error(
+        Extensions.getNoFilesError extensions
+        |> NoFilesToPack
+      )
+    | head :: tail -> Ok(NonEmptyList.create head tail)
+
+  let private getOptional modInfoFile dir compress fileToBeCompressed (getter: GetModInfoVariable) fileType =
+    match getter modInfoFile dir with
+    | Error _ -> None
+    | Ok v ->
+      let optional = compress (fileToBeCompressed v) |> fileType
+      Some optional
+
+  let private validateScreenshot (screenshot: Screenshot option) =
+    match screenshot with
+    | None -> Ok None
+    | Some v ->
+      let (Screenshot v') = v
+      let fileName = v'.PathOnDisk |> QuotedStr.unquote
+
+      if not (System.IO.File.Exists(fileName)) then
+        Error(
+          $"Screenshot file \"{fileName}\" does not exist.\nCheck the modinfo.ini file for that armor option and make sure that screenshot file exists on disk."
+          |> NonExistentFile
+        )
+      else
+        Ok(Some v)
+
+  let create (d: ArmorOptionCreationData) =
+    let modInfoFile = d.ModInfoFile
+    let dir = d.Dir
+
+    result {
+      let! optionName =
+        d.Getters.Name modInfoFile dir
+        |> Result.mapError UndefinedVariable
+
+      let optionName' = ArmorZipPath.create d.Config.OptionsPrefix optionName
+
+      let compressToBase = FileToBeCompressed.create (ArmorZipPath.value optionName')
+
+      let compressToNatives =
+        FileToBeCompressed.create (Path.Combine(ArmorZipPath.value optionName', d.Config.RelDir))
+
+      let fileToBeCompressed = combine2 dir
+
+      let getOptional' = getOptional modInfoFile dir compressToBase fileToBeCompressed
+
+      let zippedModInfo =
+        compressToBase (fileToBeCompressed modInfoFile)
+        |> ModInfoIni
+
+      let! zippedScreenshot =
+        getOptional' d.Getters.Screenshot Screenshot
+        |> validateScreenshot
+
+      let! files = getFiles compressToNatives fileToBeCompressed d.Config.Extensions dir
+
+      return
+        { ModInfo = zippedModInfo
+          Screenshot = zippedScreenshot
+          Name = optionName'
+          Files = files }
+    }
+
+  let toStr (armorOption: ArmorOption) =
+    let compressedFileToStr convert v = convert v |> FileToBeCompressed.toStr
+
+    let getOptionalValue convert v =
+      v
+      |> Option.map (fun z -> compressedFileToStr convert z)
+      |> Option.defaultValue ""
+
+    let files =
+      armorOption.Files
+      |> NonEmptyList.toArray
+      |> Array.map (compressedFileToStr (fun z -> let (ArmorFile x) = z in x))
+      |> toStrWithNl
+
+    [| compressedFileToStr (fun z -> let (ModInfoIni x) = z in x) armorOption.ModInfo
+       getOptionalValue (fun z -> let (Screenshot x) = z in x) armorOption.Screenshot
+       files |]
+    |> toStrWithNl
+
+/// Gets a list of subfolders. Each subfolder is a different armor option.
+let private getArmorOptions: GetArmorOptions =
+  fun cfg inDir modInfoFile ->
+    let toArmorOption dir =
+      let getters =
+        { ArmorOptionValues.Name = Config.ModInfo.getName
+          Screenshot = Config.ModInfo.getScreenShot }
+
+      let d =
+        { ArmorOptionCreationData.Dir = dir
+          ModInfoFile = modInfoFile
+          Config = cfg
+          Getters = getters }
+
+      ArmorOption.create d
+
+    let validateList lst =
+      match lst with
+      | [] ->
+        Error(
+          NoArmorOptions $"No armor options were found. Put a {modInfoFile} file inside each folder you want to pack."
+        )
+      | head :: tail -> Ok(NonEmptyList.create head tail)
+
+    result {
+      let! o =
+        Directory.GetFiles(inDir, modInfoFile, SearchOption.AllDirectories)
+        |> Array.map getDir
+        |> Array.map toArmorOption
+        |> Array.toList
+        |> Result.sequence
+
+      let! lst = validateList o
+      return lst
+    }
+
+let armorOptionsErrorToMsg err =
+  match err with
+  | NoArmorOptions x -> x
+  | NoFilesToPack x -> x
+  | UndefinedVariable x -> x
+  | NonExistentFile x -> x
+  |> ErrorMsg
+
 let execute args =
+  let modinfoFile = "modinfo.ini"
+
+  let baseDir =
+    args.InputDir
+    |> trimEndingDirectorySeparator
+    |> getDir
+
+  let newFile = outFileName baseDir args.OutFile
+  let outFile = newFile "7z" |> ZipFile.create
+  let tempBat = newFile "bat"
+
   result {
-    let modinfoFile = "modinfo.ini"
     let! cfg = Config.get args.InputDir
 
-    let baseDir =
-      args.InputDir
-      |> trimEndingDirectorySeparator
-      |> getDir
-
-    let armorOptions = getArmorOptions args.InputDir modinfoFile
-    let newFile = outFileName baseDir args.OutFile
-    let outFile = newFile "7z" |> ZipFile.create
-    let tempBat = newFile "bat"
-
-    let processArmorOption =
-      Compression.armorOption (armorOptions.Length = 1) cfg modinfoFile outFile
+    let! armorOptions =
+      getArmorOptions cfg args.InputDir modinfoFile
+      |> Result.mapError armorOptionsErrorToMsg
 
     armorOptions
-    |> Array.map processArmorOption
+    |> NonEmptyList.toArray
+    |> Array.map ArmorOption.toStr
     |> Array.insertManyAt 0 (batHeader args.ZipExe outFile)
     |> toStrWithNl
     |> (fun s -> s + "pause")
