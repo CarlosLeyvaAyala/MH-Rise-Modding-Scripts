@@ -1,7 +1,6 @@
 ﻿namespace Domain
 
 open System.IO
-open System
 
 /// Path of the dir the user wants to process
 type DirToProcess = string

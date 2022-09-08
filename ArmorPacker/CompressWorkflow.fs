@@ -17,93 +17,8 @@ let private batHeader zipExe outFile =
   [| "@echo off"
      $"set zipExe={ExeName.value zipExe}"
      $"set releaseFile={o}"
-     "del %releaseFile%" |]
-
-module private Compression =
-  let private zipExecute args = $"%%zipExe%% {args}"
-
-  let private zipAdd (zipFile: ZipFile) relDir (fileName: QuotedStr) inArr =
-    let zf = ZipFile.value zipFile
-    let fn = QuotedStr.value fileName
-    let add = $"a -t7z %%releaseFile%% {fn} -spf2"
-
-    let oldFn =
-      fileName
-      |> QuotedStr.modify removeDrive
-      |> QuotedStr.value
-
-    let newFn =
-      fileName
-      |> QuotedStr.modify (fun s -> s |> getFileName |> combine2 relDir)
-      |> QuotedStr.value
-
-    let rename = $"rn %%releaseFile%% {oldFn} {newFn}"
-    Array.append inArr [| zipExecute add; zipExecute rename |]
-
-  let qStr str = QuotedStr.create str
-
-  /// Gets the MH Rise files that will be shipped for the mod.
-  let private getFiles cfg outFile armorOptionName dirName =
-    let relPath = Path.Combine(armorOptionName, cfg.RelDir)
-
-    let toZip fileName =
-      zipAdd outFile relPath (qStr fileName) [||]
-
-    let rx =
-      @"(?i).*\.("
-      + Extensions.value cfg.Extensions
-      + @")\.\d+.*"
-
-    Directory.GetFiles(dirName, "*.*", SearchOption.AllDirectories)
-    |> Array.filter (fun s -> Regex.Match(s, rx).Success)
-    |> Array.map toZip
-    |> Array.collect (fun a -> a)
-
-  /// Adds an optional file if it was defined.
-  let private optional outFile armorOptionName dirName opt results =
-    match opt with
-    | Error _ -> results
-    | Ok v ->
-      let q = qStr (Path.Combine(dirName, v))
-      zipAdd outFile armorOptionName q results
-
-  // TODO: Move to Domain
-  let private getArmorOptionName isSingleArmorOption modinfoFile dirName =
-    if isSingleArmorOption then
-      ""
-    else
-      match Config.ModInfo.getName modinfoFile dirName with
-      | Error _ -> failwith $"A \"name\" is required inside {Path.Combine(dirName, modinfoFile)}"
-      | Ok v -> v
-
-  let normalizeName prefix (optionName: string) =
-    let n = prefix + " " + optionName
-
-    let s =
-      n
-        .Replace(",", " ")
-        .Replace("-", " ")
-        .ToLower()
-        .Trim()
-
-    Regex(@"\s+").Replace(s, "_")
-
-  /// Generates the strings needed to compress a whole dir as an armor option
-  let armorOption isSingleArmorOption cfg modinfoFile outFile dirName =
-    let armorOptionName =
-      getArmorOptionName isSingleArmorOption modinfoFile dirName
-      |> normalizeName cfg.OptionsPrefix
-
-    let screenshot = Config.ModInfo.getScreenShot modinfoFile dirName
-    let modinfo = qStr (Path.Combine(dirName, modinfoFile))
-    let riseFiles = getFiles cfg outFile armorOptionName dirName
-    let optional' = optional outFile armorOptionName dirName
-
-    [||]
-    |> zipAdd outFile armorOptionName modinfo
-    |> optional' screenshot
-    |> fun a -> Array.append a riseFiles
-    |> toStrWithNl
+     "del %releaseFile%"
+     "" |]
 
 module ArmorOption =
   let private getFiles compress fileToBeCompressed extensions dirName =
@@ -181,6 +96,10 @@ module ArmorOption =
     }
 
   let toStr (armorOption: ArmorOption) =
+    let header str =
+      let sep = "".PadRight(30, ':')
+      $"{sep}\n:: {str}\n{sep}"
+
     let compressedFileToStr convert v = convert v |> FileToBeCompressed.toStr
 
     let getOptionalValue convert v =
@@ -194,8 +113,11 @@ module ArmorOption =
       |> Array.map (compressedFileToStr (fun z -> let (ArmorFile x) = z in x))
       |> toStrWithNl
 
-    [| compressedFileToStr (fun z -> let (ModInfoIni x) = z in x) armorOption.ModInfo
+    [| header "ModInfo"
+       compressedFileToStr (fun z -> let (ModInfoIni x) = z in x) armorOption.ModInfo
+       header "Screenshot file (optional)"
        getOptionalValue (fun z -> let (Screenshot x) = z in x) armorOption.Screenshot
+       header "Armor files"
        files |]
     |> toStrWithNl
 
@@ -255,6 +177,9 @@ let execute args =
   let outFile = newFile "7z" |> ZipFile.create
   let tempBat = newFile "bat"
 
+  let beautify str =
+    Regex(@"\n{3,}").Replace(str, "\n\n") |> trim
+
   result {
     let! cfg = Config.get args.InputDir
 
@@ -268,7 +193,7 @@ let execute args =
     |> Array.insertManyAt 0 (batHeader args.ZipExe outFile)
     |> toStrWithNl
     |> (fun s -> s + "pause")
-    |> trim
+    |> beautify
     |> (fun s -> File.WriteAllText(tempBat, s))
 
     Process.Start(tempBat) |> ignore

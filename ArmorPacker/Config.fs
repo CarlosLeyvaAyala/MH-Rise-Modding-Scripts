@@ -5,7 +5,6 @@ open System.Text.RegularExpressions
 open Domain
 open FSharpx.Collections
 open DMLib.IO.Path
-open DMLib
 
 let private configFileName = "config.ini"
 
