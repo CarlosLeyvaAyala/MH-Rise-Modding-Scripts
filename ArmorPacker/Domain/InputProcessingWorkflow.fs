@@ -15,8 +15,6 @@ type ParamError =
 type InputType =
   | InvalidInput of string
   | DirOnly of string
-  | TextFileName of string
-  | ConfigIni of string
   | DirAndFile of string * string
 
 type CmdLineArgs = string array

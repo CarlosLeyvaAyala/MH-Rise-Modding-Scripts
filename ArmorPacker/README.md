@@ -4,6 +4,8 @@ Generates a batch file that uses 7-zip to compress a dir containing armors so it
 
 # Usage
 
+See [help topics](Help/010_index.md).
+
 ## Overview
 
 This program expects you to have some particular structure to your files:

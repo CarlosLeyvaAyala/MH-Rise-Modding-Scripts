@@ -1,6 +1,7 @@
 ﻿// For more information see https://aka.ms/fsharp-console-apps
 open System
 open DMLib
+open Domain
 
 let returnError msg =
   printfn "Error:\n%s" msg
@@ -12,8 +13,8 @@ let processData args =
     let! r =
       args
       |> InputProcessingWorkflow.getInput
-      |> Combinators.tee (printfn "%A")
-      |> CompressWorkflow.execute
+      //|> Combinators.tee (printfn "%A")
+      |> Result.map CompressWorkflow.execute
 
     return r
   }
