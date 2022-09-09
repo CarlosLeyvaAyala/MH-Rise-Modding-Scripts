@@ -1,17 +1,38 @@
 ﻿module InputProcessingWorkflow
 
 open Domain
+open Domain.InputProcessingWorkflow
 open System
 open System.IO
 open DMLib.IO.Path
 
-type CmdParams =
-  { InputDir: string
-    OutFile: string option }
-
 let private askForOutputFile () =
   printfn "What will be the name of the release file?"
   Console.ReadLine()
+
+let private getCmdArgType: GetCmdArgType =
+  fun args ->
+    match Array.toList args with
+    | [] -> InvalidInput "You must drag and drop a folder (or file) to this app."
+    | [ IsDir dir ] -> DirOnly dir
+    | [ file ] ->
+      if Path.GetFileName(file).ToLower() = "config.ini" then
+        ConfigIni file
+      else
+        TextFileName file
+    | dir :: file :: _ -> DirAndFile(dir, file)
+
+let cmdTypeToParams: CmdTypeToParams =
+  fun arg ->
+    match arg with
+    | InvalidInput e -> e |> NoInput |> Error
+    | DirOnly d -> Ok { InputDir = d; OutFile = None }
+    | DirAndFile (d, f) -> Ok { InputDir = d; OutFile = Some f }
+    | TextFileName f ->
+      Ok
+        { InputDir = Path.GetDirectoryName(f)
+          OutFile = Some(Path.GetFileNameWithoutExtension(f)) }
+//| ConfigIni f ->
 
 let private getFromCmd args =
   match Array.toList args with

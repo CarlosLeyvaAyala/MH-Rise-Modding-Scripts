@@ -1,10 +1,22 @@
 ﻿// For more information see https://aka.ms/fsharp-console-apps
 open System
+open DMLib
 
 let returnError msg =
   printfn "Error:\n%s" msg
   Console.ReadKey() |> ignore
   1
+
+let processData args =
+  result {
+    let! r =
+      args
+      |> InputProcessingWorkflow.getInput
+      |> Combinators.tee (printfn "%A")
+      |> CompressWorkflow.execute
+
+    return r
+  }
 
 [<EntryPoint>]
 let main args =
@@ -12,12 +24,7 @@ let main args =
 
   let r =
     try
-      let r =
-        args
-        |> InputProcessingWorkflow.getInput
-        |> CompressWorkflow.execute
-
-      match r with
+      match processData args with
       | Ok _ -> 0
       | Error e -> returnError e
     with

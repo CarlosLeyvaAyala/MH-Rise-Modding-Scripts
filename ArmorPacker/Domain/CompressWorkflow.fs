@@ -9,6 +9,22 @@ open System.IO
 
 type PathContainingModinfoIni = string
 
+type CleanedInputDir = private CleanedInputDir of string
+
+module CleanedInputDir =
+  let create dir =
+    dir
+    |> trim
+    |> fun s ->
+         if s.EndsWith(".") then
+           removeLastChars 1 s
+         else
+           s
+    |> trimEndingDirectorySeparator
+    |> CleanedInputDir
+
+  let value (CleanedInputDir dir) = dir
+
 /// Name for the compressed distributable file.
 type ZipFile = private ZipFile of QuotedStr
 
@@ -74,7 +90,13 @@ module FileToBeCompressed =
 
 type ModInfoIni = ModInfoIni of FileToBeCompressed
 type Screenshot = Screenshot of FileToBeCompressed
-type ArmorFile = ArmorFile of FileToBeCompressed
+type ArmorFile = private ArmorFile of FileToBeCompressed
+
+module ModInfoIni =
+  let toStr (ModInfoIni x) = x |> FileToBeCompressed.toStr
+
+module Screenshot =
+  let toStr (Screenshot x) = x |> FileToBeCompressed.toStr
 
 module ArmorFile =
   let create compress fileToBeCompressed extensions fileName =
@@ -92,6 +114,8 @@ module ArmorFile =
         Some zippedFile
       else
         None
+
+  let toStr (ArmorFile x) = x |> FileToBeCompressed.toStr
 
 /// Armor option <c>name</c> taken from modinfo.ini
 type ArmorZipPath = private ArmorZipPath of string

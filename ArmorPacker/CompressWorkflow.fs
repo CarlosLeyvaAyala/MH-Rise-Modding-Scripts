@@ -7,7 +7,6 @@ open System.IO
 open System.Text.RegularExpressions
 open System.Diagnostics
 open FSharpx.Collections
-open Config
 
 let private outFileName dir fileName ext = Path.Combine(dir, $"{fileName}.{ext}")
 
@@ -100,23 +99,21 @@ module ArmorOption =
       let sep = "".PadRight(30, ':')
       $"{sep}\n:: {str}\n{sep}"
 
-    let compressedFileToStr convert v = convert v |> FileToBeCompressed.toStr
-
-    let getOptionalValue convert v =
+    let getOptionalValue head toStr v =
       v
-      |> Option.map (fun z -> compressedFileToStr convert z)
+      |> Option.map toStr
+      |> Option.map (fun s -> $"{header head}\n{s}\n")
       |> Option.defaultValue ""
 
     let files =
       armorOption.Files
       |> NonEmptyList.toArray
-      |> Array.map (compressedFileToStr (fun z -> let (ArmorFile x) = z in x))
+      |> Array.map ArmorFile.toStr
       |> toStrWithNl
 
     [| header "ModInfo"
-       compressedFileToStr (fun z -> let (ModInfoIni x) = z in x) armorOption.ModInfo
-       header "Screenshot file (optional)"
-       getOptionalValue (fun z -> let (Screenshot x) = z in x) armorOption.Screenshot
+       ModInfoIni.toStr armorOption.ModInfo
+       getOptionalValue "Screenshot file" Screenshot.toStr armorOption.Screenshot
        header "Armor files"
        files |]
     |> toStrWithNl
@@ -157,7 +154,7 @@ let private getArmorOptions: GetArmorOptions =
       return lst
     }
 
-let armorOptionsErrorToMsg err =
+let private armorOptionsErrorToMsg err =
   match err with
   | NoArmorOptions x -> x
   | NoFilesToPack x -> x
@@ -168,12 +165,14 @@ let armorOptionsErrorToMsg err =
 let execute args =
   let modinfoFile = "modinfo.ini"
 
-  let baseDir =
+  let inputDir =
     args.InputDir
-    |> trimEndingDirectorySeparator
-    |> getDir
+    |> CleanedInputDir.create
+    |> CleanedInputDir.value
 
-  let newFile = outFileName baseDir args.OutFile
+  let outDir = inputDir
+
+  let newFile = outFileName outDir args.OutFile
   let outFile = newFile "7z" |> ZipFile.create
   let tempBat = newFile "bat"
 
@@ -181,10 +180,10 @@ let execute args =
     Regex(@"\n{3,}").Replace(str, "\n\n") |> trim
 
   result {
-    let! cfg = Config.get args.InputDir
+    let! cfg = Config.get inputDir
 
     let! armorOptions =
-      getArmorOptions cfg args.InputDir modinfoFile
+      getArmorOptions cfg inputDir modinfoFile
       |> Result.mapError armorOptionsErrorToMsg
 
     armorOptions

@@ -45,10 +45,15 @@ module String =
   /// Converts a string array to a string separated by newlines.
   let toStrWithNl = Array.fold foldNl ""
   let trim (s: string) = s.Trim()
+  let removeLastChars n (s: string) = s[.. s.Length - (n + 1)]
 
 module Combinators =
   let tap f x =
     f
+    x
+
+  let tee f x =
+    f x
     x
 
   let fork f g x = (f x), (g x)
