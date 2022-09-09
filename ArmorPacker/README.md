@@ -1,6 +1,8 @@
 # Armor Packer
 
-Generates a batch file that uses 7-zip to compress a dir containing armors so it can be distributed as a Fluffy file with options.
+**Easily pack your MH Rise armor mods for distribution.**
+
+This program generates a batch file that in turn runs [7-zip][] to compress some directory containing all the armors (and armor options) so it can be distributed as a Fluffy file with options.
 
 # Usage
 
@@ -256,3 +258,5 @@ Skimpy version\
 You can play with many different settings and ideas to get aquainted with how the program works.
 
 No files will be harmed in the process.
+
+[7-zip]: https://www.7-zip.org/

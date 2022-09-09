@@ -17,6 +17,8 @@ module Extensions =
 
   let value (Extensions ext) : IniVariableValue = ext
 
+  let defaultValue = "mdf2,mesh,chain"
+
   /// Regular expression used to see if some file name matches the extension list.
   let fileFilterRegex (Extensions ext) = @"(?i).*\.(" + ext + @")\.\d+.*"
 

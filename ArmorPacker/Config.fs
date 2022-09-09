@@ -54,7 +54,7 @@ let private getValue: GetConfigValue =
 let private getExtensions cfg =
   Extensions.create (
     match getValue (NoConfigValueError "") "extensions" cfg with
-    | Error _ -> "mdf2,mesh,chain"
+    | Error _ -> Extensions.defaultValue
     | Ok s -> s
   )
 
