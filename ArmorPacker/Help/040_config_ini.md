@@ -12,17 +12,17 @@ In this case, `x:\some folders\210 Narwa` was dragged to ArmorPacker.exe.
 
 Notice how there are many subfolders (most of them containing armor options), **but config.ini is right at `x:\some folders\210 Narwa\config.ini`**.
 
-## Variables
+# Variables
 
-### modInternalPath
+## modInternalPath
 
 **_REQUIRED_**
 
 This is the path where your files will be actually installed by Fluffy.
 
-#### Example
+### Example
 
-By assigning this variable the value `natives\STM\player\mod\f\pl210` you are telling all the files inside your mod will be installed inside that file.
+By assigning this variable the value `natives\STM\player\mod\f\pl210` you are telling all the files inside your mod will be installed inside that folder.
 
 ![](Img/config_ini_path_example.png)
 
@@ -30,7 +30,7 @@ Notice how there are no subfolders inside `x:\some folders\210 Narwa\00 Base`, o
 
 ![](Img/config_ini_pathzip_example.png)
 
-### optionsPrefix
+## optionsPrefix
 
 **_REQUIRED_**
 
@@ -38,37 +38,39 @@ For each armor option, this prefix will be added to the folder name for that opt
 
 This is an anti-collision measure so your mod will play nicely with Fluffy Manager.
 
+See ==modinfo.ini== for more information on how option names are generated.
+
 `sick gains 210`
 
-### extensions
+## extensions
 
 **_OPTIONAL_**
 
-Any file with any of these extensions will be added to your packed file, otherwise ignored.
+Any file with any of these extensions will be added to your packed file, otherwise they are ignored.
 
 There are two exceptions to this rule:
 
 1. `modinfo.ini` will be included no matter what, since it is needed by Fluffy.
-   Very rarely (if ever) you will need to add `ini` files to `extensions`.
 2. The screenshot for your armor option will be taken directly from `modinfo.ini`.
 
-#### Format
+### Format
 
 Extensions are separated by comma.
 
       extensions=ext1,ext2,ext3...
 
-**Notice how none of them has a period in their name**.
+**Notice how none of them has a period in their name**.\
+You can include periods if you want, but they aren't actually required.
 
-This is wrong and will get you errors:
+This works:
 
       extensions=.mesh,.tex
 
-This is ok:
+This does exactly the same, but it looks less cluttered:
 
       extensions=mesh,tex
 
-#### More on extensions
+### More on extensions
 
 Because this program is designed to be used to pack armors, their related files and nothing else, **it will always search for files that have your desired extension plus a bunch of weird numbers**.
 
@@ -85,6 +87,6 @@ But not this file:
 
       lololol.mesh
 
-#### Default
+### Default
 
 If you ommit the `extensions` variable, it will default to `mdf2,mesh,chain`: the most common type of armor files to be distributed.

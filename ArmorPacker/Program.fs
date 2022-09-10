@@ -10,11 +10,8 @@ let returnError msg =
 
 let processData args =
   result {
-    let! r =
-      args
-      |> InputProcessingWorkflow.getInput
-      //|> Combinators.tee (printfn "%A")
-      |> Result.map CompressWorkflow.execute
+    let! inputs = args |> InputProcessingWorkflow.getInput
+    let! r = inputs |> CompressWorkflow.execute
 
     return r
   }

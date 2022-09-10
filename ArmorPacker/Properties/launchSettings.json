@@ -2,7 +2,7 @@
   "profiles": {
     "ArmorPacker": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\Osrail\\Documents\\GitHub\\MH-Rise-EBB-Armors\\342 Storge\\EBB Storge Set - Sick Gains.txt\""
+      "commandLineArgs": "\"C:\\Users\\Osrail\\Documents\\GitHub\\MH-Rise-EBB-Armors\\Comissions\\Nargacuga feet\\vespoid\"\r\n\"EBB Custom - Vespoid feet to Nargacuga\""
     }
   }
 }

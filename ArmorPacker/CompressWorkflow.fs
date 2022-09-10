@@ -7,6 +7,7 @@ open System.IO
 open System.Text.RegularExpressions
 open System.Diagnostics
 open FSharpx.Collections
+open DMLib.Combinators
 
 let private outFileName dir fileName ext = Path.Combine(dir, $"{fileName}.{ext}")
 
@@ -193,6 +194,7 @@ let execute args =
     |> toStrWithNl
     |> (fun s -> s + "pause")
     |> beautify
+    |> tee (printfn "%A")
     |> (fun s -> File.WriteAllText(tempBat, s))
 
     Process.Start(tempBat) |> ignore
