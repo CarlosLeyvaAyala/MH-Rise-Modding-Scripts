@@ -128,6 +128,7 @@ module ArmorZipPath =
       n
         .Replace(",", " ")
         .Replace("-", " ")
+        .Replace("_", " ")
         .ToLower()
         .Trim()
 
