@@ -69,9 +69,10 @@ let private cmdTypeToParams: CmdTypeToParams =
     | DirOnly d -> Ok { InputDir = d; OutFile = None }
     | DirAndFile (d, f) -> Ok { InputDir = d; OutFile = Some f }
 
-let private getZipExe =
-  let jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json")
-  ExeName.create jsonPath @"C:\Program Files\7-Zip\7z.exe"
+let private getZipExe () =
+  let jsonPath = combine2 AppDomain.CurrentDomain.BaseDirectory "config.json"
+  let cfg = DMLib.Json.get<ConfigJson> jsonPath
+  ExeName.create jsonPath cfg.``7zipPath``
 
 let private paramErrorToMsg err =
   match err with
@@ -81,9 +82,9 @@ let private paramErrorToMsg err =
   |> ErrorMsg
 
 let getInput args =
-  //let t = getFromCmd args
   result {
     let! t = args |> getCmdArgType |> cmdTypeToParams
+    let! zipExe = () |> getZipExe |> Result.mapError NoZipExe
 
     let! r =
       match t.OutFile with
@@ -91,7 +92,7 @@ let getInput args =
         Ok
           { FullParams.InputDir = t.InputDir
             OutFile = o
-            ZipExe = getZipExe }
+            ZipExe = zipExe }
       | None ->
         result {
           let! outFile = askForOutputFile ()
@@ -99,7 +100,7 @@ let getInput args =
           let rr =
             { InputDir = t.InputDir
               OutFile = outFile
-              ZipExe = getZipExe }
+              ZipExe = zipExe }
 
           return rr
         }

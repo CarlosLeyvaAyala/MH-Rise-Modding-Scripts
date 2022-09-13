@@ -50,28 +50,31 @@ type ExeName = private ExeName of QuotedStr
 module ExeName =
   let private checkFileExists jsonPath q fileName =
     if not (File.Exists(fileName)) then
-      failwith
-        $"7zip executable {QuotedStr.value q} does not exist. If you have installed it somewhere else, make sure to modify {QuotedStr.value jsonPath}."
-
-    fileName
+      $"7zip executable {QuotedStr.value q} does not exist. If you have installed it somewhere else, make sure to modify {QuotedStr.value jsonPath}."
+      |> ErrorMsg
+      |> Error
+    else
+      Ok fileName
 
   let private checkExe q (fileName: string) =
     let exe = "7z.exe"
 
     if not (fileName.ToLower().EndsWith(exe)) then
-      failwith
-        $"Your 7zip executable must be named \"{exe}\" (last tested with 7zip v22.01, which is guaranteed to have a file named like that)."
-
-    q
+      $"Your 7zip executable must be named \"{exe}\" (last tested with 7zip v22.01, which is guaranteed to have a file named like that)."
+      |> ErrorMsg
+      |> Error
+    else
+      Ok q
 
   let create jsonPath fileName =
     let q = fileName |> QuotedStr.create
     let jsonPath' = jsonPath |> QuotedStr.create
 
-    fileName
-    |> checkFileExists jsonPath' q
-    |> checkExe q
-    |> ExeName
+    result {
+      let! e = fileName |> checkFileExists jsonPath' q
+      let! x = e |> checkExe q
+      return x |> ExeName
+    }
 
   let value (ExeName fileName) = fileName |> QuotedStr.value
 
