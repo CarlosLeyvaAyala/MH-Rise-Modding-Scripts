@@ -3,7 +3,7 @@
 #load "Domain\GlobalTypes.fs"
 #load "Domain\Config.fs"
 #load "Domain\CompressWorkflow.fs"
-#load "Config.fs"
+//#load "Config.fs"
 
 open Domain
 
