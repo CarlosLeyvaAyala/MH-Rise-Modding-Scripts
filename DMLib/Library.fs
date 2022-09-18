@@ -4,11 +4,34 @@ open System.IO
 open System.Text.RegularExpressions
 open System.Text.Json
 
+module Combinators =
+  let tap f x =
+    f
+    x
+
+  let tee f x =
+    f x
+    x
+
+  let fork f g x = (f x), (g x)
+
+  let join2 aTuple =
+    match fst aTuple with
+    | Error e -> Error e
+    | Ok v1 ->
+      match snd aTuple with
+      | Error e -> Error e
+      | Ok v2 -> Ok(v1, v2)
+
+
 module IO =
   module Path =
     let getDir (path) = Path.GetDirectoryName(path: string)
     let getExt path = Path.GetExtension(path: string)
     let getFileName path = Path.GetFileName(path: string)
+
+    let getRelativeDir relPath dir =
+      Path.GetFullPath(Path.Combine(dir, relPath))
 
     let removeDrive (path) =
       let m = Regex.Match(path, @".*:\\(.*)")
@@ -47,25 +70,6 @@ module String =
   let toStrWithNl = Array.fold foldNl ""
   let trim (s: string) = s.Trim()
   let removeLastChars n (s: string) = s[.. s.Length - (n + 1)]
-
-module Combinators =
-  let tap f x =
-    f
-    x
-
-  let tee f x =
-    f x
-    x
-
-  let fork f g x = (f x), (g x)
-
-  let join2 aTuple =
-    match fst aTuple with
-    | Error e -> Error e
-    | Ok v1 ->
-      match snd aTuple with
-      | Error e -> Error e
-      | Ok v2 -> Ok(v1, v2)
 
 module OutputAccumulator =
   type InputOutputPair<'i, 'o> = 'i * 'o array

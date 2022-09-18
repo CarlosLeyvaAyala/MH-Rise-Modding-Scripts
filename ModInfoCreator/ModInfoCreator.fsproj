@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Domain\Common.fs" />
+    <Compile Include="Domain\InputProcessing.fs" />
+    <Compile Include="InputProcessingWorkflow.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DMLib\DMLib.fsproj" />
+  </ItemGroup>
+
+</Project>
