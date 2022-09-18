@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ModInfoCreator": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\Osrail\\Documents\\GitHub\\MH-Rise-EBB-Armors\\248 Shell Studded\\template.ini\"\r\n\"C:\\Users\\Osrail\\Documents\\GitHub\\MH-Rise-EBB-Armors\\248 Shell Studded\\modinfo.csv\""
+    }
+  }
+}

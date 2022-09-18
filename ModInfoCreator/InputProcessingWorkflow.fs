@@ -5,8 +5,8 @@ open Domain.InputProcessing
 
 let private getErrorMsg e =
   match e with
-  | InvalidFile e -> $"Invalid file error: {e}"
-  | IncompleteParams e -> $"Invalid arguments error: {e}"
+  | InvalidFile e -> $"One of your command line arguments is an invalid file: {e}"
+  | IncompleteParams e -> $"{e}"
 
 let processInput: ProcessInput =
   fun args ->

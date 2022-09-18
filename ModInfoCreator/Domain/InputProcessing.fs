@@ -33,7 +33,7 @@ module InputArgs =
     let sep = "".PadRight(100, '=')
 
     let head =
-      $"\n\n{sep}\n\tMODINFO.INI CREATOR\t::\tCreate modinfo.ini files for your MH Rise mods.\n{sep}\n"
+      $"{sep}\n\tMODINFO.INI CREATOR\t::\tCreate modinfo.ini files for your MH Rise mods.\n{sep}\n"
 
     head
     + """
