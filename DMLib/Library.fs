@@ -63,6 +63,7 @@ module IO =
     let getFilesOption (option: SearchOption) searchPattern path =
       Directory.GetFiles(path, searchPattern, option)
 
+
 module String =
   let foldNl acc s = acc + s + "\n"
 
@@ -70,6 +71,22 @@ module String =
   let toStrWithNl = Array.fold foldNl ""
   let trim (s: string) = s.Trim()
   let removeLastChars n (s: string) = s[.. s.Length - (n + 1)]
+
+  type NonEmptyString = private NonEmptyString of string
+
+  module NonEmptyString =
+    let create str =
+      if str = "" then
+        Error "This string can not be empty"
+      else
+        NonEmptyString str |> Ok
+
+    let value (NonEmptyString str) = str
+
+    let apply f (NonEmptyString e) = f e
+
+    let map f e = apply f e |> create
+
 
 module OutputAccumulator =
   type InputOutputPair<'i, 'o> = 'i * 'o array
@@ -85,6 +102,7 @@ module OutputAccumulator =
   let map f (args: InputOutputPair<'i, 'o>) = append args (args |> fst |> f)
 
   let start x = x, [||]
+
 
 [<RequireQualifiedAccess>]
 module Json =

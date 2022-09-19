@@ -8,8 +8,14 @@
   <ItemGroup>
     <Compile Include="Domain\Common.fs" />
     <Compile Include="Domain\InputProcessing.fs" />
+    <Compile Include="Domain\InfoGathering.fs" />
     <Compile Include="InputProcessingWorkflow.fs" />
     <Compile Include="Program.fs" />
+    <None Include="Scratchpad.fsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharpx.Collections" Version="3.0.1" />
   </ItemGroup>
 
   <ItemGroup>
