@@ -8,13 +8,17 @@ type FilesToProcess =
   { Template: IniTemplatePath
     DirInfo: DirInfoPath }
 
+type BaseSubdirPath = string
+
 type DirInfo =
   { DirName: string
     OptionName: string
     Description: string }
 
 type DirInfoToProcess = Result<DirInfo, ErrorMessage>
+type TemplateContents = string
 
 type ProcessingInfo =
   { InfoList: DirInfoToProcess list
-    TemplateContents: string }
+    TemplateContents: TemplateContents
+    BaseDir: BaseSubdirPath }

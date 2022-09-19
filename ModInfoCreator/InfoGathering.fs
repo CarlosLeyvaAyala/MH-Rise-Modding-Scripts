@@ -1,6 +1,7 @@
 ﻿module InfoGathering
 
 open Domain.InfoGathering
+open System.IO
 
 let gather: GatherInfo =
   fun input ->
@@ -23,5 +24,6 @@ let gather: GatherInfo =
 
       return
         { InfoList = infoList
-          TemplateContents = t |> IniTemplateContents.value }
+          TemplateContents = t |> IniTemplateContents.value
+          BaseDir = Path.GetDirectoryName(input.DirInfo) }
     }
