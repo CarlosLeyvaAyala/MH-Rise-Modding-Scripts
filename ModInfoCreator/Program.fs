@@ -1,12 +1,14 @@
 ﻿open System
 open Domain
 open InputProcessingWorkflow
+open InfoGathering
 
 let processData args =
   try
     result {
       let! i = processInput args
-      return i
+      let! g = gather i
+      return g
     }
   with
   | _ as e -> ErrorMessage e.Message |> Error

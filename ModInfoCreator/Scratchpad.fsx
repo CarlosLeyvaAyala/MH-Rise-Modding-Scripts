@@ -3,18 +3,15 @@
 #load "..\DMLib\Result.fs"
 #load "Domain\Common.fs"
 #load "Domain\InfoGathering.fs"
+#load "InfoGathering.fs"
 
 open Domain.InfoGathering
+open Domain
+open InfoGathering
 open FSharpx.Collections
 
-match DirInfoContents.create @"C:\Users\Osrail\Documents\GitHub\MH-Rise-EBB-Armors\248 Shell Studded\modinfo.csv" with
-| Error e -> printfn "%A" e
-| Ok c ->
-  c
-  |> DirInfoContents.value
-  |> NonEmptyList.toList
-  |> List.map (Result.mapError toErrorMsg)
-  |> List.map (Result.map DirModInfo.stringValue)
-  |> List.iter (printfn "%A")
+let i =
+  { Template = @"C:\Users\Osrail\Documents\GitHub\MH-Rise-EBB-Armors\248 Shell Studded\template.ini"
+    DirInfo = @"C:\Users\Osrail\Documents\GitHub\MH-Rise-EBB-Armors\248 Shell Studded\modinfo.csv" }
 
-IniTemplateContents.create @"C:\Users\Osrail\Documents\GitHub\MH-Rise-EBB-Armors\248 Shell Studded\template.ini"
+gather i

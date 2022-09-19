@@ -21,7 +21,6 @@ type DirModInfo =
 type RawModInfo = (DirNameStr * OptionNameStr * Description)
 type DirModInfoToRawStr = DirModInfo -> RawModInfo
 
-
 type GatheringError =
   //| NonExistentDir of string // Some dir in dir info points to a non existent dir. MOVE TO EXECUTION DOMAIN
   | EmptyTemplate of string // Template file is empty
@@ -31,6 +30,9 @@ type GatheringError =
 
 type IniTemplateContents = private IniTemplateContents of NonEmptyString
 type DirInfoContents = private DirInfoContents of NonEmptyList<Result<DirModInfo, GatheringError>>
+
+type GatherInfo = FilesToProcess -> Result<ProcessingInfo, ErrorMessage>
+
 
 let toErrorMsg e =
   "ERROR "
@@ -93,11 +95,17 @@ module DirModInfo =
   let value dirInfo =
     (dirInfo.Dir, dirInfo.OptionName, dirInfo.Description)
 
-  let stringValue: DirModInfoToRawStr =
+  let private stringValue: DirModInfoToRawStr =
     fun dirInfo ->
       let (DirName dir, OptionName option, desc) = value dirInfo
       (NonEmptyString.value dir, NonEmptyString.value option, desc)
 
+  let toDirInfo dirInfo =
+    let (dir, opt, desc) = stringValue dirInfo
+
+    { DirInfo.DirName = dir
+      OptionName = opt
+      Description = desc }
 
 module internal FileOps =
   let readAllLinesTrimmed path =
@@ -115,10 +123,6 @@ module internal FileOps =
   let returnError errorType path =
     path |> emptyPathMsg |> errorType |> Error
 
-open FileOps
-open DMLib.String.NonEmptyString
-open DMLib.String.NonEmptyString
-
 
 module DirInfoContents =
   let create (path: DirInfoPath) =
@@ -130,7 +134,7 @@ module DirInfoContents =
       |> DirInfoContents
       |> Ok
 
-  let value (DirInfoContents contents) = contents
+  let value (DirInfoContents contents) = contents |> NonEmptyList.toList
 
 
 module IniTemplateContents =
@@ -164,5 +168,7 @@ module IniTemplateContents =
 
       let! r = NonEmptyString.create validated |> toEmptyError
 
-      return r
+      return r |> IniTemplateContents
     }
+
+  let value (IniTemplateContents contents) = contents |> NonEmptyString.value
