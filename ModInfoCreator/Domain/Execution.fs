@@ -14,6 +14,8 @@ type DirModInfo =
 type Command = Result<DirModInfo, ErrorMessage>
 type Commands = Command list
 
+type ProcessData = ProcessingInfo -> unit
+
 module DirList =
   let create baseDir =
     Directory.GetDirectories(baseDir, "*", SearchOption.AllDirectories)

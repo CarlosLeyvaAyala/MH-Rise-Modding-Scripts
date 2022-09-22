@@ -15,6 +15,8 @@ module Combinators =
 
   let fork f g x = (f x), (g x)
 
+  let swap f x y = f y x
+
   let join2 aTuple =
     match fst aTuple with
     | Error e -> Error e

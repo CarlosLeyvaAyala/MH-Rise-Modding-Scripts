@@ -9,8 +9,10 @@
     <Compile Include="Domain\Common.fs" />
     <Compile Include="Domain\InputProcessing.fs" />
     <Compile Include="Domain\InfoGathering.fs" />
+    <Compile Include="Domain\Execution.fs" />
     <Compile Include="InputProcessingWorkflow.fs" />
     <Compile Include="InfoGathering.fs" />
+    <Compile Include="Execution.fs" />
     <Compile Include="Program.fs" />
     <None Include="Scratchpad.fsx" />
   </ItemGroup>
