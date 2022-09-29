@@ -31,7 +31,8 @@ let private rarHeader rarExe tempFolder releaseFileRar =
     [| $"set rar={RarExeName.value v}"
        $"set tempFolder={encloseQuotes tempFolder}"
        $"set releaseFileRar={Path.GetFileName(releaseFileRar: string)
-                             |> encloseQuotes}" |]
+                             |> encloseQuotes}"
+       "del %releaseFileRar%" |]
     |> toStrWithNl
 
 let private createRarInstructions rarExe =
@@ -42,7 +43,7 @@ let private createRarInstructions rarExe =
        ":: Rar conversion"
        "%zipExe% x %releaseFile% -o%tempFolder% -r"
        "%rar% m %releaseFileRar% %tempFolder% -ep1"
-       //"del %tempFolder%"
+       "del %releaseFile%"
        "" |]
 
 module ArmorOption =
