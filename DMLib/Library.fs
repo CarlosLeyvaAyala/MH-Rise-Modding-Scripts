@@ -67,12 +67,30 @@ module IO =
 
 
 module String =
+
+  /// Folder function to create a string separated by new lines.
   let foldNl acc s = acc + s + "\n"
 
   /// Converts a string array to a string separated by newlines.
   let toStrWithNl = Array.fold foldNl ""
+
+  let toLower (s: string) = s.ToLower()
+  let toUpper (s: string) = s.ToUpper()
+  let startsWith (value: string) (s: string) = s.StartsWith(value)
+  let endsWith (value: string) (s: string) = s.EndsWith(value)
   let trim (s: string) = s.Trim()
+  let trimStart (s: string) = s.TrimStart()
+  let trimEnd (s: string) = s.TrimEnd()
   let removeLastChars n (s: string) = s[.. s.Length - (n + 1)]
+  let enclose left right (s: string) = left + s + right
+  let encloseSame surround = enclose surround surround
+  let encloseQuotes = encloseSame "\""
+
+  let (|EndsWith|_|) endStr input =
+    if endsWith endStr input then
+      Some input
+    else
+      None
 
   type NonEmptyString = private NonEmptyString of string
 

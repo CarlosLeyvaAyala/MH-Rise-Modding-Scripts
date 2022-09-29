@@ -16,7 +16,13 @@ open DMLib
 
 let jsonPath = Path.Combine(__SOURCE_DIRECTORY__, "config.json")
 let cfg = Json.get<ConfigJson> jsonPath
-printfn "%A" (ExeName.create jsonPath cfg.``7zipPath``)
+//let exe = ExeName.create jsonPath cfg.``7zipPath``
+let exe = ExeName.create jsonPath "C:/Program Files/7-Zip/7z.exe"
+let value = exe |> Result.map ExeName.value
+
+match value with
+| Ok v -> printfn "Value %A" (v)
+| Error e -> printfn "Error: %A" e
 
 //printfn "***************************************"
 //ArmorOption.create d |> printfn "%A"

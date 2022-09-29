@@ -1,3 +1,4 @@
 ﻿{
-  "7zipPath": "C:/Program Files/7-Zip/7z.exe"
+  "7zipPath": "C:/Program Files/7-Zip/7z.exe",
+  "RarPath": "C:/Program Files/WinRAR/Rar.exe"
 }

@@ -8,6 +8,7 @@ open System.Text.RegularExpressions
 open System.Diagnostics
 open FSharpx.Collections
 open DMLib.Combinators
+open System.Security.Cryptography
 
 let private outFileName dir fileName ext = Path.Combine(dir, $"{fileName}.{ext}")
 
@@ -112,7 +113,9 @@ module ArmorOption =
       |> Array.map ArmorFile.toStr
       |> toStrWithNl
 
-    [| header "ModInfo"
+    [| ":: ".PadRight(100, '#')
+       $":: {armorOption.Name |> ArmorZipPath.value}\n\n"
+       header "ModInfo"
        ModInfoIni.toStr armorOption.ModInfo
        getOptionalValue "Screenshot file" Screenshot.toStr armorOption.Screenshot
        header "Armor files"
@@ -197,5 +200,5 @@ let execute args =
     |> tee (printfn "%A")
     |> (fun s -> File.WriteAllText(tempBat, s))
 
-    Process.Start(tempBat) |> ignore
+  //Process.Start(tempBat) |> ignore
   }

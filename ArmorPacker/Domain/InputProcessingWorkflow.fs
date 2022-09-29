@@ -23,4 +23,6 @@ type GetCmdArgType = CmdLineArgs -> InputType
 
 type CmdTypeToParams = InputType -> Result<CmdParams, ParamError>
 
-type ConfigJson = { ``7zipPath``: string }
+type ConfigJson =
+  { ``7zipPath``: string
+    RarPath: string }

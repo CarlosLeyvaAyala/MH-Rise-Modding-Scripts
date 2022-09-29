@@ -1,6 +1,7 @@
 ﻿namespace Domain
 
 open System.IO
+open DMLib.String
 
 /// Path of the dir the user wants to process
 type DirToProcess = string
@@ -13,6 +14,21 @@ type ModInfoFileName = string
 
 /// String surrounded by quotes. Used to send command line instructions to compress files.
 type QuotedStr = private QuotedStr of string
+
+type ErrorMsg = string
+type FileName = string
+
+/// Executable file name.
+type ExeName = private ExeName of QuotedStr
+
+type RarExeName = private RarExeName of QuotedStr
+
+/// Full parameters needed to start processing files.
+type FullParams =
+  { InputDir: DirToProcess
+    OutFile: BatFileName
+    ZipExe: ExeName }
+
 
 module QuotedStr =
   let private transformIfNot transform condition x =
@@ -36,7 +52,6 @@ module QuotedStr =
 
   let modify fn (fileName: QuotedStr) = fileName |> unquote |> fn |> create
 
-type ErrorMsg = string
 
 module ErrorMsg =
   let map errorExtractor x =
@@ -44,42 +59,42 @@ module ErrorMsg =
     | Ok v -> Ok v
     | Error e -> e |> errorExtractor |> Error
 
-/// Executable file name.
-type ExeName = private ExeName of QuotedStr
-
-module ExeName =
-  let private checkFileExists jsonPath q fileName =
+module private ExeFileName =
+  let checkFileExists (errorMsg: ErrorMsg) (fileName: FileName) =
     if not (File.Exists(fileName)) then
-      $"7zip executable {QuotedStr.value q} does not exist. If you have installed it somewhere else, make sure to modify {QuotedStr.value jsonPath}."
-      |> ErrorMsg
-      |> Error
+      Error errorMsg
     else
       Ok fileName
 
-  let private checkExe q (fileName: string) =
-    let exe = "7z.exe"
-
-    if not (fileName.ToLower().EndsWith(exe)) then
-      $"Your 7zip executable must be named \"{exe}\" (last tested with 7zip v22.01, which is guaranteed to have a file named like that)."
-      |> ErrorMsg
-      |> Error
+  let checkExe (errorMsg: ErrorMsg) (exeName: FileName) (fileName: FileName) =
+    if not (Path.GetFileName(fileName) |> toLower = exeName) then
+      Error errorMsg
     else
-      Ok q
+      Ok fileName
+
+  let createQuotedStr (fileName: FileName) = ""
+
+module ExeName =
+  open ExeFileName
+
+  let fileNonExistingE jsonPath fileName =
+    ErrorMsg
+      $"7zip executable {encloseQuotes fileName} does not exist. If you have installed it somewhere else, make sure to modify {encloseQuotes jsonPath}."
+
+  let wrongExeE exeName =
+    ErrorMsg
+      $"Your 7zip executable must be named {encloseQuotes exeName} (last tested with 7zip v22.01, which is guaranteed to have a file named like that)."
+
 
   let create jsonPath fileName =
-    let q = fileName |> QuotedStr.create
-    let jsonPath' = jsonPath |> QuotedStr.create
+    let exeName = "7z.exe"
+    let notExist = fileNonExistingE jsonPath fileName
+    let wrongExe = wrongExeE exeName
 
     result {
-      let! e = fileName |> checkFileExists jsonPath' q
-      let! x = e |> checkExe q
-      return x |> ExeName
+      let! existing = fileName |> checkFileExists notExist
+      let! x = existing |> (checkExe wrongExe exeName)
+      return x |> QuotedStr.create |> ExeName
     }
 
   let value (ExeName fileName) = fileName |> QuotedStr.value
-
-/// Full parameters needed to start processing files.
-type FullParams =
-  { InputDir: DirToProcess
-    OutFile: BatFileName
-    ZipExe: ExeName }
