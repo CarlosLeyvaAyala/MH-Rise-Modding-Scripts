@@ -5,6 +5,7 @@ open Domain.InputProcessingWorkflow
 open System
 open System.IO
 open DMLib.IO.Path
+open DMLib.String
 
 let private askForOutputFile () =
   printfn "What will be the name of the release file?"
@@ -69,10 +70,22 @@ let private cmdTypeToParams: CmdTypeToParams =
     | DirOnly d -> Ok { InputDir = d; OutFile = None }
     | DirAndFile (d, f) -> Ok { InputDir = d; OutFile = Some f }
 
+let private jsonPath = combine2 AppDomain.CurrentDomain.BaseDirectory "config.json"
+let private cfg = DMLib.Json.get<ConfigJson> jsonPath
+
 let private getZipExe () =
-  let jsonPath = combine2 AppDomain.CurrentDomain.BaseDirectory "config.json"
-  let cfg = DMLib.Json.get<ConfigJson> jsonPath
   ExeName.create jsonPath cfg.``7zipPath``
+
+let private getRarExe () =
+  let rar = cfg.RarPath |> trim
+
+  match rar with
+  | "" -> Ok None
+  | _ ->
+    match RarExeName.create jsonPath rar with
+    | Ok v -> Some v |> Ok
+    | Error e -> Error e
+
 
 let private paramErrorToMsg err =
   match err with
@@ -85,6 +98,7 @@ let getInput args =
   result {
     let! t = args |> getCmdArgType |> cmdTypeToParams
     let! zipExe = () |> getZipExe |> Result.mapError NoZipExe
+    let! rarExe = () |> getRarExe |> Result.mapError NoZipExe
 
     let! r =
       match t.OutFile with
@@ -92,7 +106,8 @@ let getInput args =
         Ok
           { FullParams.InputDir = t.InputDir
             OutFile = o
-            ZipExe = zipExe }
+            ZipExe = zipExe
+            RarExe = rarExe }
       | None ->
         result {
           let! outFile = askForOutputFile ()
@@ -100,7 +115,8 @@ let getInput args =
           let rr =
             { InputDir = t.InputDir
               OutFile = outFile
-              ZipExe = zipExe }
+              ZipExe = zipExe
+              RarExe = rarExe }
 
           return rr
         }

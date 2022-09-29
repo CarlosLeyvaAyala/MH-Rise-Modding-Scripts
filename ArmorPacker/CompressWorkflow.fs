@@ -5,21 +5,45 @@ open DMLib.IO.Path
 open DMLib.String
 open System.IO
 open System.Text.RegularExpressions
-open System.Diagnostics
 open FSharpx.Collections
 open DMLib.Combinators
-open System.Security.Cryptography
+open System.Diagnostics
+
+let private sectionSeparator = ":: ".PadRight(100, '#')
 
 let private outFileName dir fileName ext = Path.Combine(dir, $"{fileName}.{ext}")
 
-let private batHeader zipExe outFile =
+let private batHeader rarHeader zipExe outFile =
   let o = ZipFile.value outFile
 
   [| "@echo off"
+     ""
      $"set zipExe={ExeName.value zipExe}"
+     rarHeader
      $"set releaseFile={o}"
      "del %releaseFile%"
      "" |]
+
+let private rarHeader rarExe tempFolder releaseFileRar =
+  match rarExe with
+  | None -> ""
+  | Some v ->
+    [| $"set rar={RarExeName.value v}"
+       $"set tempFolder={encloseQuotes tempFolder}"
+       $"set releaseFileRar={Path.GetFileName(releaseFileRar: string)
+                             |> encloseQuotes}" |]
+    |> toStrWithNl
+
+let private createRarInstructions rarExe =
+  match rarExe with
+  | None -> [||]
+  | Some _ ->
+    [| sectionSeparator
+       ":: Rar conversion"
+       "%zipExe% x %releaseFile% -o%tempFolder% -r"
+       "%rar% m %releaseFileRar% %tempFolder% -ep1"
+       //"del %tempFolder%"
+       "" |]
 
 module ArmorOption =
   let private getFiles compress fileToBeCompressed extensions dirName =
@@ -113,7 +137,7 @@ module ArmorOption =
       |> Array.map ArmorFile.toStr
       |> toStrWithNl
 
-    [| ":: ".PadRight(100, '#')
+    [| sectionSeparator
        $":: {armorOption.Name |> ArmorZipPath.value}\n\n"
        header "ModInfo"
        ModInfoIni.toStr armorOption.ModInfo
@@ -180,6 +204,10 @@ let execute args =
   let outFile = newFile "7z" |> ZipFile.create
   let tempBat = newFile "bat"
 
+  let outRarFile = newFile "rar"
+  let rarH = rarHeader args.RarExe args.OutFile outRarFile
+  let rarInstructions = createRarInstructions args.RarExe
+
   let beautify str =
     Regex(@"\n{3,}").Replace(str, "\n\n") |> trim
 
@@ -193,12 +221,13 @@ let execute args =
     armorOptions
     |> NonEmptyList.toArray
     |> Array.map ArmorOption.toStr
-    |> Array.insertManyAt 0 (batHeader args.ZipExe outFile)
+    |> (fun x -> Array.append x rarInstructions)
+    |> Array.insertManyAt 0 (batHeader rarH args.ZipExe outFile)
     |> toStrWithNl
     |> (fun s -> s + "pause")
     |> beautify
     |> tee (printfn "%A")
     |> (fun s -> File.WriteAllText(tempBat, s))
 
-  //Process.Start(tempBat) |> ignore
+    Process.Start(tempBat) |> ignore
   }

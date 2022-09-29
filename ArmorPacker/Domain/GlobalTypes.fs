@@ -27,7 +27,8 @@ type RarExeName = private RarExeName of QuotedStr
 type FullParams =
   { InputDir: DirToProcess
     OutFile: BatFileName
-    ZipExe: ExeName }
+    ZipExe: ExeName
+    RarExe: RarExeName option }
 
 
 module QuotedStr =
@@ -59,6 +60,7 @@ module ErrorMsg =
     | Ok v -> Ok v
     | Error e -> e |> errorExtractor |> Error
 
+
 module private ExeFileName =
   let checkFileExists (errorMsg: ErrorMsg) (fileName: FileName) =
     if not (File.Exists(fileName)) then
@@ -67,34 +69,51 @@ module private ExeFileName =
       Ok fileName
 
   let checkExe (errorMsg: ErrorMsg) (exeName: FileName) (fileName: FileName) =
-    if not (Path.GetFileName(fileName) |> toLower = exeName) then
+    if not (Path.GetFileName(fileName) |> toLower = toLower exeName) then
       Error errorMsg
     else
       Ok fileName
 
-  let createQuotedStr (fileName: FileName) = ""
+  let createQuotedStr exeName notExist wrongExe (fileName: FileName) =
+    result {
+      let! existing = fileName |> checkFileExists notExist
+      let! x = existing |> (checkExe wrongExe exeName)
+      return x |> QuotedStr.create
+    }
+
+  let fileNonExistingE appName jsonPath fileName =
+    ErrorMsg
+      $"{appName} executable {encloseQuotes fileName} does not exist. If you have installed it somewhere else, make sure to modify {encloseQuotes jsonPath}."
+
+  let wrongExeE appName appVersion exeName =
+    ErrorMsg
+      $"Your {appName} executable must be named {encloseQuotes exeName} (last tested with {appName} v{appVersion}, which is guaranteed to have a file named like that)."
 
 module ExeName =
   open ExeFileName
 
-  let fileNonExistingE jsonPath fileName =
-    ErrorMsg
-      $"7zip executable {encloseQuotes fileName} does not exist. If you have installed it somewhere else, make sure to modify {encloseQuotes jsonPath}."
-
-  let wrongExeE exeName =
-    ErrorMsg
-      $"Your 7zip executable must be named {encloseQuotes exeName} (last tested with 7zip v22.01, which is guaranteed to have a file named like that)."
-
-
   let create jsonPath fileName =
     let exeName = "7z.exe"
-    let notExist = fileNonExistingE jsonPath fileName
-    let wrongExe = wrongExeE exeName
+    let appName = "7zip"
+    let notExist = fileNonExistingE appName jsonPath fileName
+    let wrongExe = wrongExeE appName "22.01" exeName
 
-    result {
-      let! existing = fileName |> checkFileExists notExist
-      let! x = existing |> (checkExe wrongExe exeName)
-      return x |> QuotedStr.create |> ExeName
-    }
+    createQuotedStr exeName notExist wrongExe fileName
+    |> Result.map ExeName
 
   let value (ExeName fileName) = fileName |> QuotedStr.value
+
+
+module RarExeName =
+  open ExeFileName
+
+  let create jsonPath fileName =
+    let exeName = "Rar.exe"
+    let appName = "WinRar"
+    let notExist = fileNonExistingE appName jsonPath fileName
+    let wrongExe = wrongExeE appName "5.91" exeName
+
+    createQuotedStr exeName notExist wrongExe fileName
+    |> Result.map RarExeName
+
+  let value (RarExeName fileName) = fileName |> QuotedStr.value
