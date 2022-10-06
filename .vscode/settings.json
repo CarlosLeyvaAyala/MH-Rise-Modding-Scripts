@@ -1,5 +1,6 @@
 {
-    "editor.tabSize": 2,
-    "editor.detectIndentation": false,
-    "FSharp.smartIndent": false
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "FSharp.smartIndent": false,
+  "editor.formatOnSave": false
 }

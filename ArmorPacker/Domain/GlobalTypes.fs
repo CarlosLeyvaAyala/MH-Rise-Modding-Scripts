@@ -103,6 +103,8 @@ module ExeName =
 
   let value (ExeName fileName) = fileName |> QuotedStr.value
 
+  let createForDebugging fileName = fileName |> QuotedStr.create |> ExeName
+
 
 module RarExeName =
   open ExeFileName

@@ -5,6 +5,7 @@ open System.Text.RegularExpressions
 open Domain
 open FSharpx.Collections
 open DMLib.IO.Path
+open DMLib.String
 
 let private configFileName = "config.ini"
 
@@ -103,6 +104,18 @@ let get: GetConfigData =
           OptionsPrefix = optionsPrefix }
     }
     |> ErrorMsg.map extractErrorMsg
+
+let getFolders inDir =
+  let dirs =
+    Directory.GetFiles(inDir, configFileName, SearchOption.AllDirectories)
+    |> Array.map (fun s -> Path.GetDirectoryName(s))
+
+  match dirs |> Array.toList with
+  | [] ->
+    ErrorMsg $"Your input folder must contain at least one {encloseQuotes configFileName} file."
+    |> Error
+  | h :: t -> NonEmptyList.create h t |> Ok
+
 
 module ModInfo =
   let private getValue error fileName dir varName =

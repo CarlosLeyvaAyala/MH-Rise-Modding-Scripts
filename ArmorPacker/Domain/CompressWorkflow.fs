@@ -25,6 +25,8 @@ module CleanedInputDir =
 
   let value (CleanedInputDir dir) = dir
 
+  let clean str = str |> create |> value
+
 /// Name for the compressed distributable file.
 type ZipFile = private ZipFile of QuotedStr
 
@@ -160,4 +162,4 @@ type ArmorOptionsError =
   | UndefinedVariable of string
   | NonExistentFile of string
 
-type GetArmorOptions = ConfigData -> DirToProcess -> ModInfoFileName -> Result<ArmorOptions, ArmorOptionsError>
+type GetArmorOptions = DirToProcess -> ModInfoFileName -> ConfigData -> Result<ArmorOptions, ArmorOptionsError>

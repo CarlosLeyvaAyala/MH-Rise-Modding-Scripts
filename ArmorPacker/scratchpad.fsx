@@ -6,6 +6,7 @@
 #load "Domain\CompressWorkflow.fs"
 #load "Domain\InputProcessingWorkflow.fs"
 #load "Config.fs"
+#load "CompressWorkflow.fs"
 
 open Domain
 open System
@@ -14,27 +15,29 @@ open System.Text.Json
 open Domain.InputProcessingWorkflow
 open DMLib
 
-let jsonPath = Path.Combine(__SOURCE_DIRECTORY__, "config.json")
-let cfg = Json.get<ConfigJson> jsonPath
-let exe = ExeName.create jsonPath cfg.``7zipPath``
-//let exe = ExeName.create jsonPath "c:/Program Files/7-Zip/7zG.exe"
-let value = exe |> Result.map ExeName.value
+let narwa = @"C:\Users\Osrail\Documents\GitHub\MH-Rise-EBB-Armors\210 Narwa"
+let inner = @"C:\Users\Osrail\Documents\GitHub\MH-Rise-EBB-Armors\500 Inner"
 
-match value with
-| Ok v -> printfn "Value %A" (v)
-| Error e -> printfn "Error: %A" e
+let args =
+  { FullParams.InputDir = DirToProcess inner
+    OutFile = @"C:\Users\Osrail\Documents\GitHub\MH-Rise-EBB-Armors\500 Inner\Pepe"
+    ZipExe = ExeName.createForDebugging "C:/Program Files/7-Zip/7z.exe"
+    RarExe = None }
 
-let rar = RarExeName.create jsonPath ""
+let nArgs = { args with InputDir = narwa }
 
-//printfn "***************************************"
-//ArmorOption.create d |> printfn "%A"
-//printfn "***************************************"
+Config.getFolders args.InputDir
+Config.getFolders nArgs.InputDir
+Config.getFolders @"C:\Users\Osrail\Documents\GitHub\MH-Rise-EBB-Armors\EBB Common"
+
+CompressWorkflow.execute args
+CompressWorkflow.execute nArgs
 
 /////////////////////////////////////
 
-open System.IO
+//open System.IO
 
-let xxx = @"C:\Users\Osrail\Documents\GitHub\MH-Rise-EBB-Armors\080 Nargacuga\"
+//let xxx = @"C:\Users\Osrail\Documents\GitHub\MH-Rise-EBB-Armors\080 Nargacuga\"
 
-let k = Path.Combine(xxx, @"..\EBB Distributable Textures")
-printfn "%A" (Path.GetFullPath(k))
+//let k = Path.Combine(xxx, @"..\EBB Distributable Textures")
+//printfn "%A" (Path.GetFullPath(k))

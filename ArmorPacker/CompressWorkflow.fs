@@ -149,7 +149,7 @@ module ArmorOption =
 
 /// Gets a list of subfolders. Each subfolder is a different armor option.
 let private getArmorOptions: GetArmorOptions =
-  fun cfg inDir modInfoFile ->
+  fun inDir modInfoFile cfg ->
     let toArmorOption dir =
       let getters =
         { ArmorOptionValues.Name = Config.ModInfo.getName
@@ -191,39 +191,67 @@ let private armorOptionsErrorToMsg err =
   | NonExistentFile x -> x
   |> ErrorMsg
 
-let execute args =
-  let modinfoFile = "modinfo.ini"
+let convertSingleArmor armorDir = ""
 
-  let inputDir =
-    args.InputDir
-    |> CleanedInputDir.create
-    |> CleanedInputDir.value
-
+let private getFileRelatedInfo args inputDir =
   let outDir = inputDir
-
   let newFile = outFileName outDir args.OutFile
   let outFile = newFile "7z" |> ZipFile.create
   let tempBat = newFile "bat"
 
-  let outRarFile = newFile "rar"
-  let rarH = rarHeader args.RarExe args.OutFile outRarFile
+  let rarH = rarHeader args.RarExe args.OutFile (newFile "rar")
+  let header = batHeader rarH args.ZipExe outFile
+
   let rarInstructions = createRarInstructions args.RarExe
+
+  (header, rarInstructions, tempBat)
+
+let private getBatContents inputDir =
+  let modinfoFile = "modinfo.ini"
+
+  let validateConfigs workingDirs =
+    workingDirs
+    |> List.map Config.get
+    |> Result.sequence
+
+  let generateArmorOptions cfgs =
+    cfgs
+    |> List.map (fun t -> getArmorOptions (fst t) modinfoFile (snd t))
+    |> List.map (Result.mapError armorOptionsErrorToMsg)
+    |> Result.sequence
+
+  result {
+    let! workingDirs = Config.getFolders inputDir
+
+    let workingDirs' =
+      NonEmptyList.toList workingDirs
+      |> List.map DirToProcess
+
+    let! cfgData = validateConfigs workingDirs'
+    let dirAndCfg = List.zip workingDirs' cfgData
+    let! armorOptions = generateArmorOptions dirAndCfg
+
+    return
+      armorOptions
+      |> List.map (NonEmptyList.toList >> List.map ArmorOption.toStr)
+      |> List.map (List.fold foldNl "")
+      |> List.toArray
+  }
+
+let execute args =
+  let modinfoFile = "modinfo.ini"
+  let inputDir = CleanedInputDir.clean args.InputDir
+  let (header, rarInstructions, tempBat) = getFileRelatedInfo args inputDir
 
   let beautify str =
     Regex(@"\n{3,}").Replace(str, "\n\n") |> trim
 
   result {
-    let! cfg = Config.get inputDir
+    let! packingFiles = getBatContents inputDir
 
-    let! armorOptions =
-      getArmorOptions cfg inputDir modinfoFile
-      |> Result.mapError armorOptionsErrorToMsg
-
-    armorOptions
-    |> NonEmptyList.toArray
-    |> Array.map ArmorOption.toStr
+    packingFiles
     |> (fun x -> Array.append x rarInstructions)
-    |> Array.insertManyAt 0 (batHeader rarH args.ZipExe outFile)
+    |> Array.insertManyAt 0 header
     |> toStrWithNl
     |> (fun s -> s + "pause")
     |> beautify
